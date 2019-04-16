@@ -33,7 +33,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
         int tongueWidth = 30;
 
         //Mano parametrai
-        int gravitacija = 30;
+        int pasokimoJiega = 30;// 30 orginaliai veikia gerai
         bool pasokes = true;
         int jega;
         int tongueTopPosition; // 31 - at zemes, -199 - liecia virsum lubas, 72 - po zeme, -240 - virs lubu
@@ -43,7 +43,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
         //Platforma
         int platLeftPosition=100;
         int platTOPPosition = 142;
-        int platAukstis = 30;
+        int platAukstis = 40;// 30 orginaliai veikia gerai
         int platPlotis = 150;
         bool antPavirsiaus = false;
         bool sustojesK = false;
@@ -147,7 +147,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
            
            
             // tikrina virsutines ribas sonu kolizijai
-            if (tongueTopPosition + zaidejoAukstis  == platTOPPosition + platAukstis && tongueTopPosition  == platTOPPosition) 
+            //if (tongueTopPosition + zaidejoAukstis  == platTOPPosition + platAukstis && tongueTopPosition  == platTOPPosition) 
+            if (tongueTopPosition + zaidejoAukstis <= platTOPPosition + platAukstis && tongueTopPosition >= platTOPPosition) 
             {
                 
 
@@ -207,7 +208,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 {
                     pasokes = true;
                     antPavirsiaus = false;
-                    jega = gravitacija;
+                    jega = pasokimoJiega;
                 }
             }
             Canvas.SetTop(tongue, tongueTopPosition ); 
@@ -234,7 +235,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             if (pasokes)
             {
                 tongueTopPosition -= jega;
-                jega -= 2;
+                jega -= 4;// orginaliai 2 veikia gerai, 3 - veikia, bet labau matosi sonu problema, 1 - visiskai neapti
             }
 
             //if ((tongueLeftPosition + tongueWidth) >= platLeftPosition && (tongueLeftPosition + tongueWidth) <= platLeftPosition + platPlotis)// Plaukimas
