@@ -14,7 +14,7 @@ using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
 namespace VeIsNaujo_NuoSokinejantis_1
-{
+{pakeitimas
     public partial class Program
     {
         Window mainWindow;
