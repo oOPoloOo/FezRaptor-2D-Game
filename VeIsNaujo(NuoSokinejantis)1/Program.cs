@@ -33,7 +33,10 @@ namespace VeIsNaujo_NuoSokinejantis_1
         int tongueWidth = 30;
 
         //Mano parametrai
-        int pasokimoJiega = 30;// 30 orginaliai veikia gerai
+        //int pasokimoJiega: 30 orginaliai veikia gerai, 
+        //40 - dingsta platformos virsasu kolizija, nes prasmenga platforma pries patikrinant 
+        //50 - ta pati problema is  (jei prasmenga iki puses nustumia ikaire arba desine)
+        int pasokimoJiega = 36;
         bool pasokes = true;
         int jega;
         int tongueTopPosition; // 31 - at zemes, -199 - liecia virsum lubas, 72 - po zeme, -240 - virs lubu
@@ -41,7 +44,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
        
 
         //Platforma
-        int platLeftPosition=100;
+        int platLeftPosition= 100;
         int platTOPPosition = 142;
         int platAukstis = 40;// 30 orginaliai veikia gerai
         int platPlotis = 150;
@@ -144,27 +147,32 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
         void ColliderSide()
         {
-           
-           
-            // tikrina virsutines ribas sonu kolizijai
+            
+            // netinka, nes platformos ir zaidejo dydis gali skirtis
             //if (tongueTopPosition + zaidejoAukstis  == platTOPPosition + platAukstis && tongueTopPosition  == platTOPPosition) 
+          
+            // tikrina virsutines ribas sonu kolizijai
             if (tongueTopPosition + zaidejoAukstis <= platTOPPosition + platAukstis && tongueTopPosition >= platTOPPosition) 
             {
                 
 
-                    if ((tongueLeftPosition + tongueWidth) == platLeftPosition)// tikrinu riba is kaires
-                    {
+                    //if ((tongueLeftPosition + tongueWidth) == platLeftPosition)// tikrinu riba is kaires
+                //Jei zaidejas atsiduria net ties plat viduriu - 1pikselis, tai reiskia, kad jis susidure su plat is kaires. (tongueLeftPosition + tongueWidth) + 1, tikrina daugiau 1pix
+                if ((tongueLeftPosition + tongueWidth) + 1 >= platLeftPosition && (tongueLeftPosition + tongueWidth) <= platLeftPosition + (platPlotis/2 -1))// tikrinu riba is kaires
+                {
                         tongueLeftPosition = platLeftPosition - tongueWidth;
                         sustojesD = true;
-                    }
+                }
                     else sustojesD = false;
 
 
-                    if (tongueLeftPosition == platLeftPosition + platPlotis )// tikrinu is desines
-                    {
+                //if (tongueLeftPosition == platLeftPosition + platPlotis )// tikrinu is desines
+                //Jei zaidejas atsiduria net ties plat viduriu + 1 pikselis, tai reiskia, kad jis susidure su plat is desines. tongueLeftPosition -1 tikrina daugiau 1pix
+               if (tongueLeftPosition -1 <= platLeftPosition + platPlotis && tongueLeftPosition >= platLeftPosition + (platPlotis/2 + 1))// tikrinu is desines
+               {
                         tongueLeftPosition = platLeftPosition + platPlotis ;
                         sustojesK = true;
-                    }
+                }
                     else sustojesK = false;
               
 
@@ -235,7 +243,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             if (pasokes)
             {
                 tongueTopPosition -= jega;
-                jega -= 4;// orginaliai 2 veikia gerai, 3 - veikia, bet labau matosi sonu problema, 1 - visiskai neapti
+                jega -= 6;// geriausiai veikia (jiega -= 6, pasokimoJiega= 30 || 36) 
             }
 
             //if ((tongueLeftPosition + tongueWidth) >= platLeftPosition && (tongueLeftPosition + tongueWidth) <= platLeftPosition + platPlotis)// Plaukimas
@@ -256,8 +264,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
             //sustoja krist pasiekus apacia arba platforma
             if ((tongueLeftPosition + tongueWidth) >= platLeftPosition && tongueLeftPosition <= platLeftPosition + platPlotis)//tikrinu, kad butu plat robose
             {
-                // (platAukstis/2 -1) - kad net susmigus iki vidurio, 
-                //vistiek butu ant virsaus. -1 kad nebutu situacijos, kai nesupranta ar turi stovet ant virsaus ar atsitrenkt i apacia
+                // (platAukstis/2 -1) - kad net susmigus iki vidurio be 1no pikselio, 
+                //vistiek butu ant virsaus. -1 kad nebutu situacijos, kai nesupranta ar turi stovet ant virsaus ar atsitrenkt i apacia, nes atsiduria ties viduriu
                 if (tongueTopPosition + zaidejoAukstis >= platTOPPosition && tongueTopPosition + zaidejoAukstis <= platTOPPosition + (platAukstis / 2 -1))
                                                                                                                                                           
                 {
@@ -271,7 +279,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                {
                   
                    tongueTopPosition = platTOPPosition + platAukstis;
-                   jega = -1;
+                   jega = -1;// #MrStickyFingers, jei sito nera trumpam prilimpa prie platformos apacios
                  
                }
             } else pasokes = true; // jei nulipa nuo platformos, pradeda krist
