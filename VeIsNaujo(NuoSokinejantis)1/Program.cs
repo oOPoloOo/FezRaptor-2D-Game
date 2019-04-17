@@ -60,6 +60,22 @@ namespace VeIsNaujo_NuoSokinejantis_1
         Random randomNumberGenerator = new Random();
         int score = 0;
 
+        //-------------------------------------------------------------------------------------------------------------------
+        //                                                         Vytenis
+        //-------------------------------------------------------------------------------------------------------------------
+        int basePositionTop = -60;
+        int basePositionLeft = -60;
+        int iteration = 0;
+        int platformosId = 0;
+        int trapId = 0;
+
+        int lives = 3;
+
+        Platfrom[] platformosMap = new Platfrom[1000]; //Vytenis
+       // Trap[] trapMap = new Trap[10]; //Vytenis Dar nedarau
+        //-------------------------------------------------------------------------------------------------------------------
+
+
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()
         {
@@ -93,7 +109,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             Border background = new Border();
             background.Background = new SolidColorBrush(Colors.Black);// pikseliu matavimam rinktis balta
             background.Height = 272;// buvo 240
-            background.Width = 480;// buvo 320
+            background.Width = 800;// buvo 480, kad negaletu iseit uz ekr ribu. 800 - kad galetu, del kameros
 
             layout.Children.Add(background);
             Canvas.SetLeft(background, 0);
@@ -103,7 +119,59 @@ namespace VeIsNaujo_NuoSokinejantis_1
             tongue = new Rectangle(tongueWidth, zaidejoAukstis);
             tongue.Fill = new SolidColorBrush(Colors.Red);
             layout.Children.Add(tongue);
+         
+            //-------------------------------------------------------------------------------------------------------------------
+            //                                                         Vytenis
+            //-------------------------------------------------------------------------------------------------------------------
+            //                                                      Map aprasymas
+            //-------------------------------------------------------------------------------------------------------------------
+            /*masyvas[n] = new Platfrom(plotis, aukstis);
+              masyvas[n].set(NuoKaires, NuoVirsaus);*/
+            //-------------------------------------------------------------------------------------------------------------------
+            string[] map = new string[12];
+            map[0] = "#####################################";
+            map[1] = "#...................................#";
+            map[2] = "#...................................#";
+            map[3] = "#.......................######......#";
+            map[4] = "#...####............................#";
+            map[5] = "#...................................#";
+            map[6] = "#....................@..............#";
+            map[7] = "#.................########..........#";
+            map[8] = "#...................................#";
+            map[9] = "######....................###TT######";
+            map[10] = ".....................################";
+            map[11] = ".....####............................";
 
+            for (int i = 0; i < map.Length; i++)
+            {
+                for (int j = 0; j < map[i].Length; j++)
+                {
+                    if (map[i][j] == '#')
+                    {
+                        platformosMap[platformosId] = new Platfrom(30, 30);
+                        platformosMap[platformosId].set(basePositionLeft + j * 30, basePositionTop + i * 30);
+                        platformosId++;
+                    }
+                    //else if (map[i][j] == 'T') Dar nedarau trapu
+                    //{
+                    //    trapMap[trapId] = new Trap(30, 30);
+                    //    trapMap[trapId].set(basePositionLeft + j * 30, basePositionTop + i * 30);
+                    //    trapId++;
+                    //}
+                }
+            }
+
+            for (int i = 0; i < platformosId; i++)
+            {
+                layout.Children.Add(platformosMap[i].get());
+            }
+            //for (int i = 0; i < trapId; i++) Dar nedarau trapu
+            //{
+            //    layout.Children.Add(trapMap[i].get());
+            //}
+            //-------------------------------------------------------------------------------------------------------------------
+
+           
             //plat
             platforma = new Rectangle(platPlotis, platAukstis);
             platforma.Fill = new SolidColorBrush(Colors.Purple);
@@ -231,6 +299,20 @@ namespace VeIsNaujo_NuoSokinejantis_1
             {
                 tongueLeftPosition += 5;
             }
+
+            //-------------------------------------------------------------------------------------------------------------------
+            //                                                         Vytenis
+            //-------------------------------------------------------------------------------------------------------------------
+            for (int i = 0; i < platformosId; i++)
+            {
+                platformosMap[i].updatePosition(basePositionLeft, basePositionTop);
+            }
+            //for (int i = 0; i < trapId; i++) Dar nedarau trapu
+            //{
+            //    trapMap[i].updatePosition(basePositionLeft, basePositionTop);
+            //}
+            //-------------------------------------------------------------------------------------------------------------------
+
             Canvas.SetLeft(tongue, tongueLeftPosition);
             CheckForLanding();
 

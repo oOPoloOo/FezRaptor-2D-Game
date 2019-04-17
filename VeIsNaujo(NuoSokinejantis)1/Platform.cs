@@ -14,7 +14,7 @@ using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
-namespace SokinejantisSniegutis
+namespace VeIsNaujo_NuoSokinejantis_1
 {
     class Platfrom
     {
