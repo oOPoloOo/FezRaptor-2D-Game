@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Threading;
-using System.Diagnostics;
 using Microsoft.SPOT;
 using Microsoft.SPOT.Presentation;
 using Microsoft.SPOT.Presentation.Controls;
@@ -14,64 +13,52 @@ using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
-namespace SokinejantisSniegutis
+namespace VeIsNaujo_NuoSokinejantis_1
 {
     public partial class Program
     {
         Window mainWindow;
         Canvas layout;
-        Text label;// iteration
-        Text label2;// lives
+        Text label;// score
+        Text label2;// tikrinimui
         Rectangle tongue;
-        //Rectangle snowflake;
-        //Rectangle kvad;
+        Rectangle platforma;
+        Rectangle snowflake;
 
-        int tongueLeftPosition = 150;
+
+
+        int tongueLeftPosition = 250;
         int snowflakeLeftPosition = 150;
         int snowflakeTopPosition = 50;
         int tongueWidth = 30;
-        //int rectangleLfetPosition = 600;
-        //int rectangleWidth = 30;
-
 
         //Mano parametrai
-        int gravitacija = 30;
-        bool pasokes;
-        //bool eina = false;
-        int jiega;
-        int tongueBottomPosition; // 31 - at zemes, -199 - liecia virsum lubas, 72 - po zeme, -240 - virs lubu
-        int zaidejoAukstis = 41;// buvo 200, kur naudojamas dar?
-        int zaidejoPlotis = 40;
-        //int rectBottom = 31;
-        //int rectHeight = 100;
+        //int pasokimoJiega: 30 orginaliai veikia gerai, 
+        //40 - dingsta platformos virsasu kolizija, nes prasmenga platforma pries patikrinant 
+        //50 - ta pati problema is  (jei prasmenga iki puses nustumia ikaire arba desine)
+        int pasokimoJiega = 36;
+        bool pasokes = true;
+        int jega;
+        int tongueTopPosition; // 31 - at zemes, -199 - liecia virsum lubas, 72 - po zeme, -240 - virs lubu
+        int zaidejoAukstis = 30;// buvo 200, kur naudojamas dar?
 
 
+        //Platforma
+        int platLeftPosition = 100;
+        int platTOPPosition = 142;
+        int platAukstis = 40;// 30 orginaliai veikia gerai
+        int platPlotis = 150;
+        bool antPavirsiaus = false;
+        bool sustojesK = false;
+        bool sustojesD = false;
 
-        GT.Timer joystickTimer = new GT.Timer(150);
+
+        GT.Timer joystickTimer = new GT.Timer(30);
         GT.Timer snowFlakeTimer = new GT.Timer(75);
         GT.Timer pasokimoTimer = new GT.Timer(30); // pasokimui, kad pastoviai tikrintu ar pasokes ar ne
-        //DateTime.UtcNow - Process.GetCurrentProcess().StartTime.ToUniversalTime()
-
 
         Random randomNumberGenerator = new Random();
         int score = 0;
-
-        //-------------------------------------------------------------------------------------------------------------------
-        //                                                         Vytenis
-        //-------------------------------------------------------------------------------------------------------------------
-        int basePositionTop = -60;
-        int basePositionLeft = -60;
-        int iteration = 0;
-        int platformosId = 0;
-        int trapId = 0;
-
-        int lives = 3;
-
-        Platfrom[] platformosMap = new Platfrom[1000]; //Vytenis
-        Trap[] trapMap = new Trap[10]; //Vytenis
-        //-------------------------------------------------------------------------------------------------------------------
-
-
 
         // This method is run when the mainboard is powered up or reset.   
         void ProgramStarted()
@@ -79,26 +66,19 @@ namespace SokinejantisSniegutis
             SetupUI();
 
             Canvas.SetLeft(tongue, tongueLeftPosition);
-            Canvas.SetTop(tongue, tongueBottomPosition + zaidejoAukstis);// pakeista vietoj 200 - tongueBottomPosition + zaidejoAukstis
+            Canvas.SetTop(tongue, tongueTopPosition);
 
-            /*Canvas.SetLeft(snowflake, snowflakeLeftPosition);
-            Canvas.SetTop(snowflake, snowflakeTopPosition);*/
-
-
-            //Canvas.SetLeft(kvad, rectangleLfetPosition);
-            //Canvas.SetBottom(kvad, 0);
-
-
+            Canvas.SetLeft(snowflake, snowflakeLeftPosition);
+            Canvas.SetTop(snowflake, snowflakeTopPosition);
 
             joystickTimer.Tick += new GT.Timer.TickEventHandler(JoystickTimer_Tick);
             joystickTimer.Start();
 
-            /*snowFlakeTimer.Tick += new GT.Timer.TickEventHandler(SnowflakeTimer_Tick);
-            snowFlakeTimer.Start();*/
+            snowFlakeTimer.Tick += new GT.Timer.TickEventHandler(SnowflakeTimer_Tick);
+            snowFlakeTimer.Start();
 
             pasokimoTimer.Tick += new GT.Timer.TickEventHandler(PasokimoTimer_Tick);//Pasokimo taimeris
             pasokimoTimer.Start();
-
 
 
         }
@@ -113,76 +93,32 @@ namespace SokinejantisSniegutis
             Border background = new Border();
             background.Background = new SolidColorBrush(Colors.Black);// pikseliu matavimam rinktis balta
             background.Height = 272;// buvo 240
-            background.Width = 800;// buvo 320
+            background.Width = 480;// buvo 320
 
             layout.Children.Add(background);
             Canvas.SetLeft(background, 0);
             Canvas.SetTop(background, 0);
 
             //add the tongue
-            tongue = new Rectangle(tongueWidth, zaidejoPlotis);// zaidejo plotis, buvo 40 pakeiciau i zaidejoPlotis
+            tongue = new Rectangle(tongueWidth, zaidejoAukstis);
             tongue.Fill = new SolidColorBrush(Colors.Red);
             layout.Children.Add(tongue);
 
-            //-------------------------------------------------------------------------------------------------------------------
-            //                                                         Vytenis
-            //-------------------------------------------------------------------------------------------------------------------
-            //                                                      Map aprasymas
-            //-------------------------------------------------------------------------------------------------------------------
-            /*masyvas[n] = new Platfrom(plotis, aukstis);
-              masyvas[n].set(NuoKaires, NuoVirsaus);*/
-            //-------------------------------------------------------------------------------------------------------------------
-            string[] map = new string[12];
-            map[0] = "#####################################";
-            map[1] = "#...................................#";
-            map[2] = "#...................................#";
-            map[3] = "#.......................######......#";
-            map[4] = "#...####............................#";
-            map[5] = "#...................................#";
-            map[6] = "#....................@..............#";
-            map[7] = "#.................########..........#";
-            map[8] = "#...................................#";
-            map[9] = "######....................###TT######";
-            map[10] = ".....................################";
-            map[11] = ".....####............................";
+            //plat
+            platforma = new Rectangle(platPlotis, platAukstis);
+            platforma.Fill = new SolidColorBrush(Colors.Purple);
+            layout.Children.Add(platforma);
+            Canvas.SetLeft(platforma, platLeftPosition);
+            Canvas.SetTop(platforma, platTOPPosition);//??
 
-            for (int i = 0; i < map.Length; i++)
-            {
-                for (int j = 0; j < map[i].Length; j++)
-                {
-                    if (map[i][j] == '#')
-                    {
-                        platformosMap[platformosId] = new Platfrom(30, 30);
-                        platformosMap[platformosId].set(basePositionLeft + j * 30, basePositionTop + i * 30);
-                        platformosId++;
-                    }
-                    else if (map[i][j] == 'T')
-                    {
-                        trapMap[trapId] = new Trap(30, 30);
-                        trapMap[trapId].set(basePositionLeft + j * 30, basePositionTop + i * 30);
-                        trapId++;
-                    }
-                }
-            }
 
-            for (int i = 0; i < platformosId; i++)
-            {
-                layout.Children.Add(platformosMap[i].get());
-            }
-            for (int i = 0; i < trapId; i++)
-            {
-                layout.Children.Add(trapMap[i].get());
-            }
-            //-------------------------------------------------------------------------------------------------------------------
+
+
 
             //add the snowflake
-            /*snowflake = new Rectangle(10, 10);
-        snowflake.Fill = new SolidColorBrush(Colors.White);
-        layout.Children.Add(snowflake);*/
-
-            //kvad = new Rectangle(rectangleWidth, rectHeight);
-            //kvad.Fill = new SolidColorBrush(Colors.Green);
-            //layout.Children.Add(kvad);
+            snowflake = new Rectangle(10, 10);
+            snowflake.Fill = new SolidColorBrush(Colors.White);
+            layout.Children.Add(snowflake);
 
             // add the text area
             label = new Text();
@@ -203,14 +139,52 @@ namespace SokinejantisSniegutis
             label2.Font = Resources.GetFont(Resources.FontResources.NinaB);
 
             layout.Children.Add(label2);
-            Canvas.SetLeft(label2, 0);// nieks nesikeicia, keiciant reiksmes
-            Canvas.SetTop(label2, label.Font.Height);// nieks nesikeicia, keiciant reiksmes
+            Canvas.SetLeft(label2, 0);
+            Canvas.SetTop(label2, label.Font.Height);
 
             mainWindow.Child = layout;
         }
 
+        void ColliderSide()
+        {
 
-        /*void SnowflakeTimer_Tick(GT.Timer timer)
+            // netinka, nes platformos ir zaidejo dydis gali skirtis
+            //if (tongueTopPosition + zaidejoAukstis  == platTOPPosition + platAukstis && tongueTopPosition  == platTOPPosition) 
+
+            // tikrina virsutines ribas sonu kolizijai
+            if (tongueTopPosition + zaidejoAukstis <= platTOPPosition + platAukstis && tongueTopPosition >= platTOPPosition)
+            {
+
+
+                //if ((tongueLeftPosition + tongueWidth) == platLeftPosition)// tikrinu riba is kaires
+                //Jei zaidejas atsiduria net ties plat viduriu - 1pikselis, tai reiskia, kad jis susidure su plat is kaires. (tongueLeftPosition + tongueWidth) + 1, tikrina daugiau 1pix
+                if ((tongueLeftPosition + tongueWidth) + 1 >= platLeftPosition && (tongueLeftPosition + tongueWidth) <= platLeftPosition + (platPlotis / 2 - 1))// tikrinu riba is kaires
+                {
+                    tongueLeftPosition = platLeftPosition - tongueWidth;
+                    sustojesD = true;
+                }
+                else sustojesD = false;
+
+
+                //if (tongueLeftPosition == platLeftPosition + platPlotis )// tikrinu is desines
+                //Jei zaidejas atsiduria net ties plat viduriu + 1 pikselis, tai reiskia, kad jis susidure su plat is desines. tongueLeftPosition -1 tikrina daugiau 1pix
+                if (tongueLeftPosition - 1 <= platLeftPosition + platPlotis && tongueLeftPosition >= platLeftPosition + (platPlotis / 2 + 1))// tikrinu is desines
+                {
+                    tongueLeftPosition = platLeftPosition + platPlotis;
+                    sustojesK = true;
+                }
+                else sustojesK = false;
+
+
+            }
+            else
+            {
+                sustojesD = false;
+                sustojesK = false;
+            }
+        }
+
+        void SnowflakeTimer_Tick(GT.Timer timer)
         {
             snowflakeTopPosition += 5;
             if (snowflakeTopPosition >= 240)
@@ -228,114 +202,119 @@ namespace SokinejantisSniegutis
         {
             snowflakeTopPosition = 50;
             snowflakeLeftPosition = randomNumberGenerator.Next(300) + 10;
-        }*/
+        }
 
         void JoystickTimer_Tick(GT.Timer timer)
         {
             double y = joystick.GetPosition().Y;
-            label.TextContent = "Iteration: " + iteration;
+            label.TextContent = "tongueTopPosition: " + tongueTopPosition;
+            label2.TextContent = "platTOPPosition: " + platTOPPosition;
             //Pasokimas
             if (!pasokes)
             {
                 if (y >= 0.7)
                 {
                     pasokes = true;
-                    jiega = gravitacija;
+                    antPavirsiaus = false;
+                    jega = pasokimoJiega;
                 }
             }
-            Canvas.SetTop(tongue, tongueBottomPosition);// Pasokimo veiksmui isvest i ekrana
-            // arAntZemes();//tikrina ar krist ar sustot, nes pasieke zeme
+            Canvas.SetTop(tongue, tongueTopPosition);
 
             //Orginalus kodas
             double x = joystick.GetPosition().X;// vietoj GetJoysticPosition().X;
-            if (x < -0.3 && tongueLeftPosition > 0) // buvo 0.3 jutiklio skalė [-1;1], o ne [0;1]
+            if (x < -0.3 && tongueLeftPosition > 0 && !sustojesK) // buvo 0.3 jutiklio skalė [-1;1], o ne [0;1]
             {
-                //eina = true;
-                //tongueLeftPosition -= 5;
-                //rectangleLfetPosition += 20;
-                basePositionLeft += 40;
+                tongueLeftPosition -= 5;
             }
-            else if (x > 0.7 && tongueLeftPosition < 800 - tongueWidth /*&& ((tongueLeftPosition + tongueWidth) != rectangleLfetPosition)*/)
+            else if (x > 0.7 && tongueLeftPosition < displayT43.Width - tongueWidth && !sustojesD)
             {
-                //eina = true;
-                //tongueLeftPosition += 5;
-                //rectangleLfetPosition -= 20;
-                basePositionLeft -= 40;
+                tongueLeftPosition += 5;
             }
-            //-------------------------------------------------------------------------------------------------------------------
-            //                                                         Vytenis
-            //-------------------------------------------------------------------------------------------------------------------
-            for (int i = 0; i < platformosId; i++)
-            {
-                platformosMap[i].updatePosition(basePositionLeft, basePositionTop);
-            }
-            for (int i = 0; i < trapId; i++)
-            {
-                trapMap[i].updatePosition(basePositionLeft, basePositionTop);
-            }
-            //-------------------------------------------------------------------------------------------------------------------
             Canvas.SetLeft(tongue, tongueLeftPosition);
-            //Canvas.SetLeft(kvad, rectangleLfetPosition);
-            //CheckForLanding();
-            CheckForTraps();
-            iteration++;
+            CheckForLanding();
+
+
         }
 
         void PasokimoTimer_Tick(GT.Timer timer)
         {
             //Pasokimas
-            if (pasokes)// buvo !pasokes
+            if (pasokes)
             {
-                tongueBottomPosition -= jiega;
-                jiega -= 2;
+                tongueTopPosition -= jega;
+                jega -= 6;// geriausiai veikia (jiega -= 6, pasokimoJiega= 30 || 36) 
             }
-            //sustoja krist pasiekus apacia
-            if (tongueBottomPosition >= displayT43.Height - 41) // vietoj displayT43.He
-            {
-                tongueBottomPosition = displayT43.Height - 41;// vietoj displayT43.Height - zaidejoAukstis, rasiau 31, tada zaidejas ramiai nenustovi ant zemes ir pasoka, bet zeme prie ekrano virsaus
-                pasokes = false;
-            }
-            else // jei sito nera, vaiksto, bet nepasoka ir nemigsi
-            {
-                tongueBottomPosition += 5;//kritimas, nuo lango virsaus zemina, kas 5
-            }
-            Canvas.SetTop(tongue, tongueBottomPosition);
-            //CheckForLanding();
-            //CheckForTraps();
-        }
 
-        void CheckForTraps()
-        {
-            //label2.TextContent = "Lives left: " + (lives);
-            for (int i = 0; i < trapId; i++)
-                //if (trapMap[i].getPositionTop() > tongueBottomPosition && (trapMap[i].getPositionTop() < tongueBottomPosition + zaidejoAukstis))
-                //{
-                if (trapMap[i].getPositionLeft() + 30 > tongueLeftPosition
-                && trapMap[i].getPositionLeft() < tongueLeftPosition + tongueWidth)
-                {
-                    label2.TextContent = "Lives left: " + (lives);
-                    lives--;
-                }
+            //if ((tongueLeftPosition + tongueWidth) >= platLeftPosition && (tongueLeftPosition + tongueWidth) <= platLeftPosition + platPlotis)// Plaukimas
+            //{
+            //    if (tongueTopPosition >= platTOPPosition)
+            //    {
+            //        tongueTopPosition = displayT43.Height - (zaidejoAukstis + platAukstis);
+            //        pasokes = false;
+            //    }
+            //    else // jei sito nera, vaiksto, bet nepasoka ir nemigsi
+            //    {
+            //        tongueTopPosition += 5;//kritimas, nuo lango virsaus zemina, kas 5
+            //    }
             //}
+
+
+
+            //sustoja krist pasiekus apacia arba platforma
+            if ((tongueLeftPosition + tongueWidth) >= platLeftPosition && tongueLeftPosition <= platLeftPosition + platPlotis)//tikrinu, kad butu plat robose
+            {
+                // (platAukstis/2 -1) - kad net susmigus iki vidurio be 1no pikselio, 
+                //vistiek butu ant virsaus. -1 kad nebutu situacijos, kai nesupranta ar turi stovet ant virsaus ar atsitrenkt i apacia, nes atsiduria ties viduriu
+                if (tongueTopPosition + zaidejoAukstis >= platTOPPosition && tongueTopPosition + zaidejoAukstis <= platTOPPosition + (platAukstis / 2 - 1))
+                {
+                    tongueTopPosition = platTOPPosition - zaidejoAukstis;
+                    pasokes = false;
+                    antPavirsiaus = true;
+                }
+
+                // (platAukstis/2 + 1) - jei iki platform vidurio -1, tai atsitenkia i apacia
+                if (tongueTopPosition <= platTOPPosition + platAukstis && tongueTopPosition >= (platTOPPosition + platAukstis) - (platAukstis / 2 + 1))
+                {
+
+                    tongueTopPosition = platTOPPosition + platAukstis;
+                    jega = -1;// #MrStickyFingers, jei sito nera trumpam prilimpa prie platformos apacios
+
+                }
+            }
+            else pasokes = true; // jei nulipa nuo platformos, pradeda krist
+
+
+
+            if (tongueTopPosition + zaidejoAukstis >= displayT43.Height) // tikrinu vienu daugiau
+            {
+                tongueTopPosition = displayT43.Height - zaidejoAukstis;
+                pasokes = false;
+                antPavirsiaus = true;
+            }
+
+
+            ColliderSide();
+            CheckForLanding();
+            Canvas.SetTop(tongue, tongueTopPosition);
+
         }
 
         void CheckForLanding()
         {
-            if (snowflakeTopPosition > tongueBottomPosition && snowflakeTopPosition < tongueBottomPosition + zaidejoAukstis)
+            if (snowflakeTopPosition > tongueTopPosition && snowflakeTopPosition < tongueTopPosition + zaidejoAukstis)
             {
                 if (snowflakeLeftPosition + 10 >= tongueLeftPosition
                 &&
                 snowflakeLeftPosition <= tongueLeftPosition + tongueWidth)
                 {
                     score++;
-                    label2.TextContent = "Map dydis: " + (platformosId + trapId);
-                    //ResetSnowflake();
+                    //label2.TextContent = "platTOPPosition: " + platTOPPosition;
+                    ResetSnowflake();
                 }
 
             }
 
         }
-
-
     }
 }
