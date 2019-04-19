@@ -48,8 +48,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
         //Platforma
         int platLeftPosition = 100;
         int platTOPPosition = 142;
-        int platAukstis = 40;// 30 orginaliai veikia gerai
-        int platPlotis = 150;
+        int platAukstis = 50;// veike kai buvo 40. Kai 30 kai tik nukritau ant plat virsaus, galejau sokinet ant jo daug kartu ir viskas buvo gerai, bet nulipus neveike jokios kolizijos virsus kai 30 ir 40 veikia tik kol nenulipi
+        int platPlotis = 30;// veike kai buvo 150, kai 30 ir plat aukstis 40 sonai veikia beveik gerai
         bool antPavirsiaus = false;
         bool sustojesK = false;
         bool sustojesD = false;
@@ -141,10 +141,11 @@ namespace VeIsNaujo_NuoSokinejantis_1
             map[6] = ".....................................";
             map[7] = ".....................................";
             map[8] = ".....................................";
-            map[9] = ".....................................";
-            map[10] = ".......#..#..........................";
+            map[9] = "............#....#...................";
+            map[10] = ".......#..#..#.......................";
             map[11] = ".....................................";
 
+            
             for (int i = 0; i < map.Length; i++)
             {
                 for (int j = 0; j < map[i].Length; j++)
@@ -152,6 +153,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     if (map[i][j] == '#')
                     {
                         platformosMap[platformosId] = new Platform(30, 30);
+
+                        layout.Children.Add(platformosMap[platformosId].get());// pirma pridedam, tada settinnam
+                       
                         platformosMap[platformosId].set(basePositionLeft + j * 30, basePositionTop + i * 30);
                         platformosId++;
                     }
@@ -164,10 +168,10 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 }
             }
 
-            for (int i = 0; i < platformosId; i++)
-            {
-                layout.Children.Add(platformosMap[i].get());
-            }
+            //for (int i = 0; i < platformosId; i++) Manau reikia pirma pridet, tada settint (CanvasSetTop...)
+            //{
+            //    layout.Children.Add(platformosMap[i].get());
+            //}
             //for (int i = 0; i < trapId; i++) Dar nedarau trapu
             //{
             //    layout.Children.Add(trapMap[i].get());

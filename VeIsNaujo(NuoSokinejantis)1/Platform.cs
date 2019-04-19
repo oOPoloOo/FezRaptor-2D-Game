@@ -38,11 +38,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
         public Platform(int Width, int Height)
         {
             //this.platformRectangle = new Rectangle(Height, Width);
-            this.platformRectangle = new Rectangle(Width, Height);
-            //Rect myRect2 = new Rect();
-            //myRect2.Size = new Size(50, 200);
-            //myRect2.Location = new Point(300, 100);
-            //platformRectangle.Fill = new SolidColorBrush(Colors.Orange);
+            this.platformRectangle = new Rectangle();
+            this.platformRectangle.Height = Height;
+            this.platformRectangle.Width = Width;
           
             platformRectangle.Fill = new SolidColorBrush(Colors.Orange);
         }
