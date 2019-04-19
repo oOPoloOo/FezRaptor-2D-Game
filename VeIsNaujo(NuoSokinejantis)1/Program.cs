@@ -21,8 +21,10 @@ namespace VeIsNaujo_NuoSokinejantis_1
         Canvas layout;
         Text label;// score
         Text label2;// tikrinimui
-        Text label3;// score
+        Text label3;// tikrinimui
         Text label4;// tikrinimui
+        Text label5;// tikrinimui
+        Text label6;// tikrinimui
         Rectangle tongue;
         Rectangle platforma;
         Rectangle snowflake;
@@ -229,7 +231,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
             layout.Children.Add(label3);
             Canvas.SetLeft(label3, 0);
-            Canvas.SetTop(label3, label.Font.Height * 3);
+            Canvas.SetTop(label3, label.Font.Height * 2);
 
             //Tekstas y asies reiksmiu tikrinimui
             label4 = new Text();
@@ -240,7 +242,29 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
             layout.Children.Add(label4);
             Canvas.SetLeft(label4, 0);
-            Canvas.SetTop(label4, label.Font.Height * 4);
+            Canvas.SetTop(label4, label.Font.Height * 3);
+        
+            //Tekstas y asies reiksmiu tikrinimui
+            label5 = new Text();
+            label5.Height = 272;// buvo 240
+            label5.Width = 480;// buvo 320
+            label5.ForeColor = Colors.White;
+            label5.Font = Resources.GetFont(Resources.FontResources.NinaB);
+
+            layout.Children.Add(label5);
+            Canvas.SetLeft(label5, 0);
+            Canvas.SetTop(label5, label.Font.Height * 4);
+          
+            //Tekstas y asies reiksmiu tikrinimui
+            label6 = new Text();
+            label6.Height = 272;// buvo 240
+            label6.Width = 480;// buvo 320
+            label6.ForeColor = Colors.White;
+            label6.Font = Resources.GetFont(Resources.FontResources.NinaB);
+
+            layout.Children.Add(label6);
+            Canvas.SetLeft(label6, 0);
+            Canvas.SetTop(label6, label.Font.Height * 5);
 
             mainWindow.Child = layout;
         }
@@ -367,10 +391,12 @@ namespace VeIsNaujo_NuoSokinejantis_1
            
             //Top/Bottom
             label3.TextContent = "platBottomPosition[1]: " + (platformosMap[1].posTop() + platAukstis);
-            label.TextContent = "platBottomPosition[0]:" + (platformosMap[0].posTop() + platAukstis);
-            label4.TextContent = "platTopPosition[1]: " + platformosMap[1].posTop();
-            label2.TextContent = "platTopPosition[0]: " + platformosMap[0].posTop(); 
-           
+            label.TextContent =  "platBottomPosition[0]: " + (platformosMap[0].posTop() + platAukstis);
+            label4.TextContent = "platTopPosition[1]:      " + platformosMap[1].posTop();
+            label2.TextContent = "platTopPosition[0]:      " + platformosMap[0].posTop();
+
+            label5.TextContent = "Zaidejo kaires poz:       " + tongueLeftPosition;
+            label6.TextContent = "Zaidejo virsaus poz:     " + tongueTopPosition;
             //Pasokimas
             if (!pasokes)
             {
@@ -405,9 +431,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
             //    }
             //}
 
-         //   int i = 0; 
-          //  while (!ivykoKolizija)
-            for (int i = 0; i < platformosId; i++ )
+            int i = 0;
+            while (!ivykoKolizija && i < tongueWidth)
+            //for (int i = 0; i < platformosId; i++ )
             {
                 //sustoja krist pasiekus apacia arba platforma
                 // if ((tongueLeftPosition + tongueWidth) >= platLeftPosition && tongueLeftPosition <= platLeftPosition + platPlotis)//tikrinu, kad butu plat robose
@@ -438,16 +464,23 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 }
                 else pasokes = true; // jei nulipa nuo platformos, pradeda krist
 
+                if (tongueTopPosition + zaidejoAukstis >= displayT43.Height) // Laikinai perkeliau i while vidu
+                {
+                    tongueTopPosition = displayT43.Height - zaidejoAukstis;
+                    pasokes = false;
+                    antPavirsiaus = true;
+                }
+
                 ColliderSide(i);
-                //i++;
+                i++;
             }
 
-            if (tongueTopPosition + zaidejoAukstis >= displayT43.Height) // tikrinu vienu daugiau
-            {
-                tongueTopPosition = displayT43.Height - zaidejoAukstis;
-                pasokes = false;
-                antPavirsiaus = true;
-            }
+            //if (tongueTopPosition + zaidejoAukstis >= displayT43.Height) // tikrinu vienu daugiau
+            //{
+            //    tongueTopPosition = displayT43.Height - zaidejoAukstis;
+            //    pasokes = false;
+            //    antPavirsiaus = true;
+            //}
 
             CheckForLanding();
             Canvas.SetTop(tongue, tongueTopPosition);
