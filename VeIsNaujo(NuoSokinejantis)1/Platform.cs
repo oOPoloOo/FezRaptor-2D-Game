@@ -14,20 +14,36 @@ using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
+//using System.Windows;
+//using System.Windows.Controls;
+//using System.Windows.Media;
+//using System.Windows.Shapes;
+
 namespace VeIsNaujo_NuoSokinejantis_1
 {
-    class Platfrom
+    class Platform
     {
+        //private Rectangle platformRectangle { get; set; }
         private Rectangle platformRectangle { get; set; }
-        int left = 0;
-        int top = 0;
+        
+        
+         int left = 0;
+         int top = 0;
+      
 
-        public Platfrom()
-        { }
+        public Platform()
+        { 
+        }
 
-        public Platfrom(int Width, int Height)
+        public Platform(int Width, int Height)
         {
+            //this.platformRectangle = new Rectangle(Height, Width);
             this.platformRectangle = new Rectangle(Width, Height);
+            //Rect myRect2 = new Rect();
+            //myRect2.Size = new Size(50, 200);
+            //myRect2.Location = new Point(300, 100);
+            //platformRectangle.Fill = new SolidColorBrush(Colors.Orange);
+          
             platformRectangle.Fill = new SolidColorBrush(Colors.Orange);
         }
         public void set(int leftPosition, int topPosition)
@@ -38,16 +54,23 @@ namespace VeIsNaujo_NuoSokinejantis_1
             this.top = topPosition;
         }
 
-        public void updatePosition(int leftPosition, int topPosition)
-        {
-            Canvas.SetLeft(platformRectangle, left + leftPosition);
-            Canvas.SetTop(platformRectangle, top + topPosition);
-        }
+        //public void updatePosition(int leftPosition, int topPosition)
+        //{
+        //    Canvas.SetLeft(platformRectangle, left + leftPosition);
+        //    Canvas.SetTop(platformRectangle, top + topPosition);
+        //}
 
         public Rectangle get()
         {
             return platformRectangle;
         }
-
+        public int posLeft()
+        {
+            return left;
+        }
+        public int posTop()
+        {
+            return top;
+        }
     }
 }
