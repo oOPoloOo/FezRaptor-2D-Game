@@ -144,7 +144,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             map[7] =  ".....................................";
             map[8] =  ".....................................";
             map[9] =  ".....................................";
-            map[10] = ".......#..#..........................";
+            map[10] = ".......#..#..#.......................";
             map[11] = ".....................................";
 
             
@@ -269,49 +269,49 @@ namespace VeIsNaujo_NuoSokinejantis_1
             mainWindow.Child = layout;
         }
 
-        void ColliderSide(int i)
-        {
+        //void ColliderSide(int i) // ikeliau prie kitos kolizijos, kad galeciau naudot break
+        //{
 
             
 
-            // tikrina virsutines ribas sonu kolizijai
-            //if (tongueTopPosition + zaidejoAukstis <= platTOPPosition + platAukstis && tongueTopPosition >= platTOPPosition)
-            if (tongueTopPosition + zaidejoAukstis <= platformosMap[i].posTop() + platAukstis && tongueTopPosition >= platformosMap[i].posTop())// Platform.cs
-            {
+        //    // tikrina virsutines ribas sonu kolizijai
+        //    //if (tongueTopPosition + zaidejoAukstis <= platTOPPosition + platAukstis && tongueTopPosition >= platTOPPosition)
+        //    if (tongueTopPosition + zaidejoAukstis <= platformosMap[i].posTop() + platAukstis && tongueTopPosition >= platformosMap[i].posTop())// Platform.cs
+        //    {
 
 
                
-                //Jei zaidejas atsiduria net ties plat viduriu - 1pikselis, tai reiskia, kad jis susidure su plat is kaires. (tongueLeftPosition + tongueWidth) + 1, tikrina daugiau 1pix
-                //if ((tongueLeftPosition + tongueWidth) + 1 >= platLeftPosition && (tongueLeftPosition + tongueWidth) <= platLeftPosition + (platPlotis / 2 - 1))// tikrinu riba is kaires
-                if ((tongueLeftPosition + tongueWidth) + 1 >= platformosMap[i].posLeft() && (tongueLeftPosition + tongueWidth) <= platformosMap[i].posLeft() + (platPlotis / 2 - 1))// Platform.cs
-                {
-                   // tongueLeftPosition = platLeftPosition - tongueWidth;
-                    tongueLeftPosition = platformosMap[i].posLeft() - tongueWidth;
-                    sustojesD = true;
-                    ivykoKolizija = true;
-                }
-                else sustojesD = false;
+        //        //Jei zaidejas atsiduria net ties plat viduriu - 1pikselis, tai reiskia, kad jis susidure su plat is kaires. (tongueLeftPosition + tongueWidth) + 1, tikrina daugiau 1pix
+        //        //if ((tongueLeftPosition + tongueWidth) + 1 >= platLeftPosition && (tongueLeftPosition + tongueWidth) <= platLeftPosition + (platPlotis / 2 - 1))// tikrinu riba is kaires
+        //        if ((tongueLeftPosition + tongueWidth) + 1 >= platformosMap[i].posLeft() && (tongueLeftPosition + tongueWidth) <= platformosMap[i].posLeft() + (platPlotis / 2 - 1))// Platform.cs
+        //        {
+        //           // tongueLeftPosition = platLeftPosition - tongueWidth;
+        //            tongueLeftPosition = platformosMap[i].posLeft() - tongueWidth;
+        //            sustojesD = true;
+        //            ivykoKolizija = true;
+        //        }
+        //        else sustojesD = false;
 
 
                 
-                //Jei zaidejas atsiduria net ties plat viduriu + 1 pikselis, tai reiskia, kad jis susidure su plat is desines. tongueLeftPosition -1 tikrina daugiau 1pix
-              //  if (tongueLeftPosition - 1 <= platLeftPosition + platPlotis && tongueLeftPosition >= platLeftPosition + (platPlotis / 2 + 1))// tikrinu is desines
-                if (tongueLeftPosition - 1 <= platformosMap[i].posLeft() + platPlotis && tongueLeftPosition >= platformosMap[i].posLeft() + (platPlotis / 2 + 1))// Platform.cs
-                {
-                    tongueLeftPosition = platformosMap[i].posLeft() + platPlotis;
-                    sustojesK = true;
-                    ivykoKolizija = true;
-                }
-                else sustojesK = false;
+        //        //Jei zaidejas atsiduria net ties plat viduriu + 1 pikselis, tai reiskia, kad jis susidure su plat is desines. tongueLeftPosition -1 tikrina daugiau 1pix
+        //      //  if (tongueLeftPosition - 1 <= platLeftPosition + platPlotis && tongueLeftPosition >= platLeftPosition + (platPlotis / 2 + 1))// tikrinu is desines
+        //        if (tongueLeftPosition - 1 <= platformosMap[i].posLeft() + platPlotis && tongueLeftPosition >= platformosMap[i].posLeft() + (platPlotis / 2 + 1))// Platform.cs
+        //        {
+        //            tongueLeftPosition = platformosMap[i].posLeft() + platPlotis;
+        //            sustojesK = true;
+        //            ivykoKolizija = true;
+        //        }
+        //        else sustojesK = false;
 
 
-            }
-            else
-            {
-                sustojesD = false;
-                sustojesK = false;
-            }
-        }
+        //    }
+        //    else
+        //    {
+        //        sustojesD = false;
+        //        sustojesK = false;
+        //    }
+        //}
 
         void SnowflakeTimer_Tick(GT.Timer timer)
         {
@@ -431,9 +431,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
             //    }
             //}
 
-            int i = 0;
-            while (!ivykoKolizija && i < tongueWidth)
-            //for (int i = 0; i < platformosId; i++ )
+           
+          
+            for (int i = 0; i < platformosId; i++ )
             {
                 //sustoja krist pasiekus apacia arba platforma
                 // if ((tongueLeftPosition + tongueWidth) >= platLeftPosition && tongueLeftPosition <= platLeftPosition + platPlotis)//tikrinu, kad butu plat robose
@@ -448,7 +448,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         tongueTopPosition = platformosMap[i].posTop() - zaidejoAukstis;
                         pasokes = false;
                         antPavirsiaus = true;
-                        ivykoKolizija = true;
+                        break;
                     }
 
                     // (platAukstis/2 + 1) - jei iki platform vidurio -1, tai atsitenkia i apacia
@@ -459,20 +459,61 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         //tongueTopPosition = platTOPPosition + platAukstis;
                         tongueTopPosition = platformosMap[i].posTop() + platAukstis;
                         jega = -1;// #MrStickyFingers, jei sito nera trumpam prilimpa prie platformos apacios
-                        ivykoKolizija = true;
+                        break;
                     }
                 }
                 else pasokes = true; // jei nulipa nuo platformos, pradeda krist
 
-                if (tongueTopPosition + zaidejoAukstis >= displayT43.Height) // Laikinai perkeliau i while vidu
+                if (tongueTopPosition + zaidejoAukstis >= displayT43.Height) // tikrinu vienu daugiau
                 {
                     tongueTopPosition = displayT43.Height - zaidejoAukstis;
                     pasokes = false;
                     antPavirsiaus = true;
+                    break;
                 }
 
-                ColliderSide(i);
-                i++;
+                //--------------------------------------------------------------------------------------------------------------------------------------
+                // ColliderSide() metodas, perkeltas cia, kad butu galima naudot break
+                //--------------------------------------------------------------------------------------------------------------------------------------
+                // tikrina virsutines ribas sonu kolizijai
+                //if (tongueTopPosition + zaidejoAukstis <= platTOPPosition + platAukstis && tongueTopPosition >= platTOPPosition)
+                if (tongueTopPosition + zaidejoAukstis <= platformosMap[i].posTop() + platAukstis && tongueTopPosition >= platformosMap[i].posTop())// Platform.cs
+                {
+
+
+
+                    //Jei zaidejas atsiduria net ties plat viduriu - 1pikselis, tai reiskia, kad jis susidure su plat is kaires. (tongueLeftPosition + tongueWidth) + 1, tikrina daugiau 1pix
+                    //if ((tongueLeftPosition + tongueWidth) + 1 >= platLeftPosition && (tongueLeftPosition + tongueWidth) <= platLeftPosition + (platPlotis / 2 - 1))// tikrinu riba is kaires
+                    if ((tongueLeftPosition + tongueWidth) + 1 >= platformosMap[i].posLeft() && (tongueLeftPosition + tongueWidth) <= platformosMap[i].posLeft() + (platPlotis / 2 - 1))// Platform.cs
+                    {
+                        // tongueLeftPosition = platLeftPosition - tongueWidth;
+                        tongueLeftPosition = platformosMap[i].posLeft() - tongueWidth;
+                        sustojesD = true;
+                        break;
+                    }
+                    else sustojesD = false;
+
+
+
+                    //Jei zaidejas atsiduria net ties plat viduriu + 1 pikselis, tai reiskia, kad jis susidure su plat is desines. tongueLeftPosition -1 tikrina daugiau 1pix
+                    //  if (tongueLeftPosition - 1 <= platLeftPosition + platPlotis && tongueLeftPosition >= platLeftPosition + (platPlotis / 2 + 1))// tikrinu is desines
+                    if (tongueLeftPosition - 1 <= platformosMap[i].posLeft() + platPlotis && tongueLeftPosition >= platformosMap[i].posLeft() + (platPlotis / 2 + 1))// Platform.cs
+                    {
+                        tongueLeftPosition = platformosMap[i].posLeft() + platPlotis;
+                        sustojesK = true;
+                        break;
+                    }
+                    else sustojesK = false;
+
+
+                }
+                else
+                {
+                    sustojesD = false;
+                    sustojesK = false;
+                }
+               // ColliderSide(i);
+               
             }
 
             //if (tongueTopPosition + zaidejoAukstis >= displayT43.Height) // tikrinu vienu daugiau
@@ -485,7 +526,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             CheckForLanding();
             Canvas.SetTop(tongue, tongueTopPosition);
 
-            ivykoKolizija = false;// grazinu i pradine reiksme
+         
 
         }
 
