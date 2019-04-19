@@ -48,7 +48,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
         //Platforma
         int platLeftPosition = 100;
         int platTOPPosition = 142;
-        int platAukstis = 50;// veike kai buvo 40. Kai 30 kai tik nukritau ant plat virsaus, galejau sokinet ant jo daug kartu ir viskas buvo gerai, bet nulipus neveike jokios kolizijos virsus kai 30 ir 40 veikia tik kol nenulipi
+        int platAukstis = 30;// veike kai buvo 40. Kai 30 kai tik nukritau ant plat virsaus, galejau sokinet ant jo daug kartu ir viskas buvo gerai, bet nulipus neveike jokios kolizijos virsus kai 30 ir 40 veikia tik kol nenulipi
         int platPlotis = 30;// veike kai buvo 150, kai 30 ir plat aukstis 40 sonai veikia beveik gerai
         bool antPavirsiaus = false;
         bool sustojesK = false;
@@ -132,17 +132,17 @@ namespace VeIsNaujo_NuoSokinejantis_1
               masyvas[n].set(NuoKaires, NuoVirsaus);*/
             //-------------------------------------------------------------------------------------------------------------------
             string[] map = new string[12];
-            map[0] = ".....................................";
-            map[1] = ".....................................";
-            map[2] = ".....................................";
-            map[3] = ".....................................";
-            map[4] = ".....................................";
-            map[5] = ".....................................";
-            map[6] = ".....................................";
-            map[7] = ".....................................";
-            map[8] = ".....................................";
-            map[9] = "............#....#...................";
-            map[10] = ".......#..#..#.......................";
+            map[0] =  ".....................................";
+            map[1] =  ".....................................";
+            map[2] =  ".....................................";
+            map[3] =  ".....................................";
+            map[4] =  ".....................................";
+            map[5] =  ".....................................";
+            map[6] =  ".....................................";
+            map[7] =  ".....................................";
+            map[8] =  ".....................................";
+            map[9] =  ".....................................";
+            map[10] = ".......#..#..........................";
             map[11] = ".....................................";
 
             
@@ -152,11 +152,14 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 {
                     if (map[i][j] == '#')
                     {
-                        platformosMap[platformosId] = new Platform(30, 30);
+                        //platformosMap[platformosId] = new Platform(30, 30);
+                        platformosMap[platformosId] = new Platform(platPlotis, platAukstis);// kai pakeiciau dingo plat
+
 
                         layout.Children.Add(platformosMap[platformosId].get());// pirma pridedam, tada settinnam
-                       
-                        platformosMap[platformosId].set(basePositionLeft + j * 30, basePositionTop + i * 30);
+
+                       // platformosMap[platformosId].set(basePositionLeft + j * 30, basePositionTop + i * 30);
+                        platformosMap[platformosId].set(basePositionLeft + j * platPlotis, basePositionTop + i * platAukstis);// kai pakeiciau dingo plat
                         platformosId++;
                     }
                     //else if (map[i][j] == 'T') Dar nedarau trapu
@@ -356,10 +359,17 @@ namespace VeIsNaujo_NuoSokinejantis_1
         void PasokimoTimer_Tick(GT.Timer timer)
         {
             double y = joystick.GetPosition().Y;
-            label3.TextContent = "platLeftPosition[0]: " + platformosMap[0].posLeft();
-            label.TextContent = "platRightPosition[0]:" + (platformosMap[0].posLeft() + platPlotis);
-            label4.TextContent = "platLeftPosition[1]: " + platformosMap[1].posLeft();
-            label2.TextContent = "platRightPosition[1]: " + (platformosMap[1].posLeft() + platPlotis);
+            //Left/Right
+            //label3.TextContent = "platRightPosition[1]: " + (platformosMap[1].posLeft() + platPlotis);
+            //label.TextContent = "platRightPosition[0]:" + (platformosMap[0].posLeft() + platPlotis);
+            //label4.TextContent = "platLeftPosition[1]: " + platformosMap[1].posLeft();
+            //label2.TextContent = "platLeftPosition[0]: " + platformosMap[0].posLeft(); 
+           
+            //Top/Bottom
+            label3.TextContent = "platBottomPosition[1]: " + (platformosMap[1].posTop() + platAukstis);
+            label.TextContent = "platBottomPosition[0]:" + (platformosMap[0].posTop() + platAukstis);
+            label4.TextContent = "platTopPosition[1]: " + platformosMap[1].posTop();
+            label2.TextContent = "platTopPosition[0]: " + platformosMap[0].posTop(); 
            
             //Pasokimas
             if (!pasokes)
