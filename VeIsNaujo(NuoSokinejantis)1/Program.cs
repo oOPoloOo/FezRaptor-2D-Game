@@ -37,7 +37,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
 
         //Platform parameters
-        // If platform parameters changes, position of platform also changes
+        //If platform parameters changes, position of platform also changes
         int platHeight = 30;
         int platWidth = 30;
         
@@ -54,7 +54,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
        
 
         //Map generation
-        int basePositionTop = -88;// this offset makes the platform align with botom of the screen
+        // -88 this offset makes the platform align with botom of the screen
+        int basePositionTop = -88;
         int basePositionLeft = 0;
         int platformId = 0;
         Platform[] platformMap = new Platform[200]; 
@@ -120,7 +121,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     if (map[i][j] == '#')
                     {
                         platformMap[platformId] = new Platform(platWidth, platHeight);
-                        platformMap[platformId].set(basePositionLeft + j * platWidth , basePositionTop + i * platHeight /*-88*/);
+                        platformMap[platformId].set(basePositionLeft + j * platWidth , basePositionTop + i * platHeight);
                         platformId++;
                     }
                 }
@@ -139,16 +140,19 @@ namespace VeIsNaujo_NuoSokinejantis_1
         void JoystickTimer_Tick(GT.Timer timer)
         {
             double x = joystick.GetPosition().X; // joystic x scale [-1;1]
-            if (x < -0.3 && playerLeftPosition > 0 && !stopLeft) 
+            // move left
+            if (x < -0.3 && playerLeftPosition > 0 && !stopLeft)
             {
                 playerLeftPosition -= 5;
             }
-            else if (x > 0.7 && playerLeftPosition < displayT43.Width - playerWidth && !stopRight)
+            // move right
+            else if (x > 0.7 && playerLeftPosition < displayT43.Width - playerWidth 
+                                                                     && !stopRight)
             {
                 playerLeftPosition += 5;
             }
 
-            Canvas.SetLeft(player, playerLeftPosition);
+            Canvas.SetLeft(player, playerLeftPosition);// update player left postion
        }
 
         void jumpTimer_Tick(GT.Timer timer)
@@ -172,69 +176,83 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 playerTopPosition -= power;
                 power -= 8;
             }
-            Canvas.SetTop(player, playerTopPosition);
+            Canvas.SetTop(player, playerTopPosition);// update player top position
                              
-            for (int i = 0; i < platformId; i++)
-            {
-                //TOP AND BOTTOM COLLISION
-                //Check if player is in platform bounds x axis
-                if ((playerLeftPosition + playerWidth) >= platformMap[i].posLeft() && playerLeftPosition <= platformMap[i].posLeft() + platWidth) 
-                {
-                    // (platHeight/2 -1) - even if player is in platform (from top) and doesn't touch the middle he is set on top 
-                    if (playerTopPosition + playerHeight >= platformMap[i].posTop() && playerTopPosition + playerHeight <= platformMap[i].posTop() + (platHeight / 2 - 1))
+ for (int i = 0; i < platformId; i++)
+ {
+       //TOP AND BOTTOM COLLISION
+       //Check if player is in platform bounds x axis
+       if ((playerLeftPosition + playerWidth) >= platformMap[i].posLeft() 
+            && playerLeftPosition <= platformMap[i].posLeft() + platWidth) 
+       {
+           //TOP collision. (platHeight/2 -1) - even if player is in platform 
+           // (from top) and doesn't touch the middle he is set on top 
+           if (playerTopPosition + playerHeight >= platformMap[i].posTop() 
+               && playerTopPosition + playerHeight <= platformMap[i].posTop() 
+                                                      + (platHeight / 2 - 1))
                             
-                    {
-                        playerTopPosition = platformMap[i].posTop() - playerHeight;
-                        jumped = false;
-                        onSuface = true;
+           {
+               playerTopPosition = platformMap[i].posTop() - playerHeight;
+               jumped = false;
+               onSuface = true;
                                               
-                    }
+           }
 
-                    // (platHeight/2 + 1) - even if player is in platform (from bottom) and don't touch the middle he collides with bottom 
-                    if (playerTopPosition <= platformMap[i].posTop() + platHeight && playerTopPosition >= platformMap[i].posTop() + (platHeight / 2 + 1))
-                    {
-                        playerTopPosition = platformMap[i].posTop() + platHeight;
-                        power = -1;// without this player gets stuck on platform bottom
-                    }
-                }
-                else jumped = true; // if player steps off platform - he falls
+           //BOTTOM collision. (platHeight/2 + 1) - even if player is in platform 
+           //(from bottom) and don't touch the middle he collides with bottom 
+           if (playerTopPosition <= platformMap[i].posTop() + platHeight 
+               && playerTopPosition >= platformMap[i].posTop() + (platHeight / 2 + 1))
+           {
+               playerTopPosition = platformMap[i].posTop() + platHeight;
+               power = -1;// without this player gets stuck on platform bottom
+           }
+       }        
+        else jumped = true; // if player steps off platform - he falls
 
 
-
-                if (playerTopPosition + playerHeight >= displayT43.Height) // the very bottom collision
+                // the very bottom collision
+                if (playerTopPosition + playerHeight >= displayT43.Height) 
                 {
                     playerTopPosition = displayT43.Height - playerHeight;
                     jumped = false;
                     onSuface = true;
                 }
               
-                //SIDES COLLISION
-                //Check if player is in platform bounds y axis
-                if (playerTopPosition + playerHeight <= platformMap[i].posTop() + platHeight && playerTopPosition >= platformMap[i].posTop())
-                {
-                    if ((playerLeftPosition + playerWidth) + 1 >= platformMap[i].posLeft() && (playerLeftPosition + playerWidth) <= platformMap[i].posLeft() + (platWidth / 2 - 1))
-                    {
-                        playerLeftPosition = platformMap[i].posLeft() - playerWidth;
-                        stopRight = true;
-                    }
-                    else stopRight = false;
+           //SIDES COLLISION
+           //Check if player is in platform bounds y axis
+           if (playerTopPosition + playerHeight <= platformMap[i].posTop() + platHeight 
+               && playerTopPosition >= platformMap[i].posTop())
+           {
+               //RIGHT collision. (platWidth / 2 - 1) - even if player is in platform 
+               // (from left) and don't touch the middle he collides with left
+               if ((playerLeftPosition + playerWidth) + 1 >= platformMap[i].posLeft() 
+                    && (playerLeftPosition + playerWidth) <= platformMap[i].posLeft() 
+                                                               + (platWidth / 2 - 1))
+               {
+                  playerLeftPosition = platformMap[i].posLeft() - playerWidth;
+                  stopRight = true;// stops moving right
+               }
+                else stopRight = false;
 
-                    if (playerLeftPosition - 1 <= platformMap[i].posLeft() + platWidth && playerLeftPosition >= platformMap[i].posLeft() + (platWidth / 2 + 1))
-                    {
-                        playerLeftPosition = platformMap[i].posLeft() + platWidth;
-                        stopLeft = true;
-                    }
-                    else stopLeft = false;
+               //LEFT collision. (platWidth / 2 - 1) - even if player is in platform 
+               // (from right) and don't touch the middle he collides with right
+               if (playerLeftPosition - 1 <= platformMap[i].posLeft() + platWidth 
+                   && playerLeftPosition >= platformMap[i].posLeft() + (platWidth / 2 + 1))
+               {
+                  playerLeftPosition = platformMap[i].posLeft() + platWidth;
+                  stopLeft = true;// stops moving left
+               }
+                else stopLeft = false;
 
-                }
+            }
                 else
                 {
                     stopRight = false;
                     stopLeft = false;               
                 }
               
-                Canvas.SetTop(player, playerTopPosition);
-            }
+                Canvas.SetTop(player, playerTopPosition); // update player top position
+}
 
         }
           
