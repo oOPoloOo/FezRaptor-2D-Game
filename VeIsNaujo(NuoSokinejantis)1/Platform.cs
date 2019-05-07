@@ -14,30 +14,21 @@ using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
-//using System.Windows;
-//using System.Windows.Controls;
-//using System.Windows.Media;
-//using System.Windows.Shapes;
-
 namespace VeIsNaujo_NuoSokinejantis_1
 {
     class Platform
     {
-        //private Rectangle platformRectangle { get; set; }
         private Rectangle platformRectangle { get; set; }
-        
         
          int left = 0;
          int top = 0;
       
-
         public Platform()
         { 
         }
 
         public Platform(int Width, int Height)
         {
-            //this.platformRectangle = new Rectangle(Height, Width);
             this.platformRectangle = new Rectangle();
             this.platformRectangle.Height = Height;
             this.platformRectangle.Width = Width;
@@ -51,13 +42,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             this.left = leftPosition;
             this.top = topPosition;
         }
-
-        //public void updatePosition(int leftPosition, int topPosition)
-        //{
-        //    Canvas.SetLeft(platformRectangle, left + leftPosition);
-        //    Canvas.SetTop(platformRectangle, top + topPosition);
-        //}
-
+        
         public Rectangle get()
         {
             return platformRectangle;
