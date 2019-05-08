@@ -55,5 +55,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
         {
             return top;
         }
+        public void paintBlue()
+        {
+            platformRectangle.Fill = new SolidColorBrush(Colors.Blue);
+        }
     }
 }
