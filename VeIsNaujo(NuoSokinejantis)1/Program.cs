@@ -13,10 +13,9 @@ using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
-//Sudejau V6 kolizijos virsaus ir apacios kol kodus i metodus
-//Reikia mazint metodu param sk
-//SEnas kodas paliktas uzkomentuotas
-//Padariau, kad nupiesu sygli
+//Sudejau Player duomenis i struct
+//Sudejau judejima X ir Y i metodus
+//Pastebejau, kad netinkamai veikia kairiausio kubelio kol.
 
 
 
@@ -30,24 +29,45 @@ namespace VeIsNaujo_NuoSokinejantis_1
         Canvas layout;
        
         Rectangle player;
-     
-       
 
-        //Player parameters
-        int playerTopPosition; 
-        int playerLeftPosition = 250;
-        int playerHeight = 30;//30 buvo
-        int playerWidth = 30;//30 buvo
-        int jumpPower = 30;
-        bool jumped = true;
-        int power;
+        public struct PlayerStruct
+        {
+            //Player parameters
+           // public int playerTopPosition;
+           // public int playerLeftPosition = 250;
+           // public int playerHeight = 30;//30 buvo
+           // public int playerWidth = 30;//30 buvo
+           // public int jumpPower = 30;
+           // public bool jumped = true;
+           //public int power;
+            public int playerTopPosition;
+            public int playerLeftPosition;
+            public int playerHeight;
+            public int playerWidth;
+            public int jumpPower;
+            public bool jumped;
+            public int power;
+
+           public PlayerStruct(int playerTopPos, int playerLeftPos, int playerH, int playerW, int jumpP, bool jmp, int pow)
+            {
+                playerTopPosition = playerTopPos;
+                playerLeftPosition = playerLeftPos;
+                playerHeight = playerH;
+                playerWidth = playerW;
+                jumpPower = jumpP;
+                jumped = jmp;
+                power = pow;
+            }
+        }
+        PlayerStruct playerStruct = new PlayerStruct(0,250,30,30,30,true,0);
+        
        
         
 
 
         //Platform parameters
-        //If platform parameters changes, position of platform also changes
-        int platHeight = 30;// buvo 30
+        ////If platform parameters changes, position of platform also changes
+        int platHeight = 30;// Tu
         int platWidth = 30;// buvo 30
         
         //Collision parameters
@@ -75,10 +95,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
         //Buvusi zaidejo pozicija, kolizijai geriau aptikti
         int buvusKaires;
         int buvusVirsaus;
-        bool buvoKairej = false;
-        bool buvoDesinej = false;
-        bool buvoVirsui = false;
-        bool buvoApacioj = false;
+       
         
         //Spygliai
         Platform[] spygliaiMap = new Platform[4]; 
@@ -90,8 +107,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
         {
             SetupUI();
 
-            Canvas.SetLeft(player, playerLeftPosition);
-            Canvas.SetTop(player, playerTopPosition);
+            Canvas.SetLeft(player, playerStruct.playerLeftPosition);
+            Canvas.SetTop(player, playerStruct.playerTopPosition);
 
             //joystickTimer.Tick += new GT.Timer.TickEventHandler(JoystickTimer_Tick);
             //joystickTimer.Start();
@@ -122,7 +139,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             Canvas.SetTop(background, 0);
 
             //add the player
-            player = new Rectangle(playerWidth, playerHeight);
+            player = new Rectangle(playerStruct.playerWidth, playerStruct.playerHeight);
             player.Fill = new SolidColorBrush(Colors.Red);
             layout.Children.Add(player);
 
@@ -164,6 +181,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 }
             }
 
+
+
             // Adding platforms to screen
             for (int i = 0; i < platformId; i++)
             {               
@@ -178,8 +197,37 @@ namespace VeIsNaujo_NuoSokinejantis_1
             mainWindow.Child = layout;
         }
 
+
+        void jumpTimer_Tick(GT.Timer timer)
+        {
+             
+           //-------------------------------------------------------------------------------------------------------
+           // PLATFORMOS KOLIZIJA IR JUDEJIMAS
+           //------------------------------------------------------------------------------------------------------
+            JudejimasY(ref  buvusVirsaus, ref  playerStruct,  joystick);// Sutvarkyta
+
+            Canvas.SetTop(player, playerStruct.playerTopPosition);
+            
+            VirsausKolizija(platformId,  platformMap,  buvusVirsaus, ref playerStruct, displayT43);//Pataisyta
+
+            JudejimasX(ref buvusKaires,  stopLeft, stopRight, ref playerStruct, joystick,  displayT43);// Pataisyta
+
+            Canvas.SetLeft(player, playerStruct.playerLeftPosition);// update player left posti
+
+            SonuKolizija(platformId, platformMap, buvusKaires, ref playerStruct, ref stopRight, ref stopLeft, displayT43);// Sutvarkyta
+
+            Canvas.SetTop(player, playerStruct.playerTopPosition); // update player top position
+
+            //-------------------------------------------------------------------------------------------------------
+            // SPYGLIO KOLIZIJA IR JUDEJIMAS
+            //------------------------------------------------------------------------------------------------------
+            //... Veliau
+
+        }//jumpTimer end
+      
+        
         //-------------------------------------------------------------------------------------------------
-        static void VirsausKolizija(int mapId, Platform[] map, int buvusVirsaus, int playerLeftPosition, ref int playerTopPosition, int playerWidth, int playerHeight, int platWidth, int platHeight, ref bool jumped, ref int power, Gadgeteer.Modules.GHIElectronics.DisplayT43 displayT43)
+        static void VirsausKolizija(int mapId, Platform[] map, int buvusVirsaus, ref PlayerStruct str, Gadgeteer.Modules.GHIElectronics.DisplayT43 displayT43)
         {
 
             bool buvoVirsui = false;
@@ -193,40 +241,29 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 buvoApacioj = false;
 
 
-                // if (buvusVirsaus < platformMap[i].Top) // zmogeliukas gali but ir prasmeges
                 if (buvusVirsaus < (int)map[i].posTop())
                 {
                     buvoVirsui = true;
-
-                    //buvoDesinej = false;
-                    //buvoKairej = false;
-                    //buvoApacioj = false;
                 }
 
-               // else if (buvusVirsaus > platformMap[i].Top)
                 else if (buvusVirsaus > (int)map[i].posTop())
                 {
                     buvoApacioj = true;
-
-                    //buvoVirsui = false;
-                    //buvoDesinej = false;
-                    //buvoKairej = false;
                 }
                 //------------------------------------------------------------------------------------------------------------------
 
 
-                //--------------------------------------------------------------------------------------------------
-                if ((playerLeftPosition + playerWidth) > map[i].posLeft()
-                              && playerLeftPosition < map[i].posLeft() + platWidth)
+                if ((str.playerLeftPosition + str.playerWidth) > map[i].posLeft()
+                              && str.playerLeftPosition < map[i].posLeft() + map[i].Width())
                 {
                     //TOP collision. (platHeight/2 -1) - even if player is in platform 
                     // (from top) and doesn't touch the middle he is set on top 
 
-                    if (buvoVirsui && playerTopPosition + playerHeight >= map[i].posTop()
-                        && playerTopPosition + playerHeight <= map[i].posTop() + platHeight + System.Math.Abs(power))
+                    if (buvoVirsui && str.playerTopPosition + str.playerHeight >= map[i].posTop()
+                        && str.playerTopPosition + str.playerHeight <= map[i].posTop() + map[i].Height() + System.Math.Abs(str.power))
                     {
-                        playerTopPosition = map[i].posTop() - playerHeight;
-                        jumped = false;
+                        str.playerTopPosition = map[i].posTop() - str.playerHeight;
+                        str.jumped = false;
                         //  kolVirsus = true;
                         break;
 
@@ -235,34 +272,31 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     //BOTTOM collision. (platHeight/2 + 1) - even if player is in platform 
                     //(from bottom) and don't touch the middle he collides with bottom 
 
-                    if (buvoApacioj && playerTopPosition <= map[i].posTop() + platHeight
-                        && playerTopPosition >= map[i].posTop() - System.Math.Abs(power))
+                    if (buvoApacioj && str.playerTopPosition <= map[i].posTop() + map[i].Height()
+                        && str.playerTopPosition >= map[i].posTop() - System.Math.Abs(str.power))
                     {
-                        playerTopPosition = map[i].posTop() + platHeight;
-                        power = -1;// without this player gets stuck on platform bottom
+                        str.playerTopPosition = map[i].posTop() + map[i].Height();
+                        str.power = -1;// without this player gets stuck on platform bottom
                         // kolAplacia = true;
                         break;
                     }
                 }
-                else jumped = true; // if player steps off platform - he falls
-                //}
-                //--------------------------------------------------------------------------------------------------
+                else str.jumped = true; // if player steps off platform - he falls
+               
             }
 
             // the very bottom collision
-            if (playerTopPosition + playerHeight >= displayT43.Height)
+            if (str.playerTopPosition + str.playerHeight >= displayT43.Height)
             {
-                playerTopPosition = displayT43.Height - playerHeight;
-                jumped = false;
+                str.playerTopPosition = displayT43.Height - str.playerHeight;
+                str.jumped = false;
             }
 
-            //--------------------------------------------------------------------------------------------------------- 
+        }// VirsasuKolizija end
+       
 
-        }
-        //-------------------------------------------------------------------------------------------------
-    
-        //-------------------------------------------------------------------------------------------------
-        static void sonuKolizija(int mapId, Platform[] map, int buvusKaires, ref int playerLeftPosition, int playerTopPosition, int playerWidth, int playerHeight, int platWidth, int platHeight, ref bool stopRight, ref bool stopLeft, Gadgeteer.Modules.GHIElectronics.DisplayT43 displayT43)
+       
+        static void SonuKolizija(int mapId, Platform[] map, int buvusKaires,ref PlayerStruct str, ref bool stopRight, ref bool stopLeft, Gadgeteer.Modules.GHIElectronics.DisplayT43 displayT43)
         {
             bool buvoKairej = false;
             bool buvoDesinej = false;
@@ -274,37 +308,35 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
                 //-------------------------------------------------------------------------------------------------
                 //Buvusi pozicija
-                if (buvusKaires < map[i].posLeft() && buvusKaires + playerWidth < map[i].posLeft()
-           && ((playerTopPosition < map[i].posTop() || playerTopPosition + playerHeight < playerTopPosition) || (map[i].posTop() + platHeight > playerTopPosition
-           || playerTopPosition + playerHeight < map[i].posTop() + platHeight)))
+                if (buvusKaires < map[i].posLeft() && buvusKaires + str.playerWidth < map[i].posLeft()
+                   && ((str.playerTopPosition < map[i].posTop() || str.playerTopPosition + str.playerHeight < str.playerTopPosition) || (map[i].posTop() + map[i].Height() > str.playerTopPosition
+                   || str.playerTopPosition + str.playerHeight < map[i].posTop() + map[i].Height())))
                 {
                     buvoKairej = true;
 
 
                 }
-                else if (buvusKaires > map[i].posLeft() + platWidth && buvusKaires + playerWidth > map[i].posLeft() + platWidth
-                   && ((playerTopPosition < map[i].posTop() || playerTopPosition + playerHeight < playerTopPosition) || (map[i].posTop() + platHeight > playerTopPosition
-                   || playerTopPosition + playerHeight < map[i].posTop() + platHeight)))
+                else if (buvusKaires > map[i].posLeft() + map[i].Width() && buvusKaires + str.playerWidth > map[i].posLeft() + map[i].Width()
+                   && ((str.playerTopPosition < map[i].posTop() || str.playerTopPosition + str.playerHeight < str.playerTopPosition) || (map[i].posTop() + map[i].Height() > str.playerTopPosition
+                   || str.playerTopPosition + str.playerHeight < map[i].posTop() + map[i].Height())))
                 {
                     buvoDesinej = true;
-
-
                 }
 
-
                 //---------------------------------------------------------------------------------------------------------------------
-                if (playerTopPosition + playerHeight >= map[i].posTop() + 1
-                                      && playerTopPosition <= map[i].posTop() + platHeight - 1)
+
+                if (str.playerTopPosition + map[i].Height() >= map[i].posTop() + 1
+                                      && str.playerTopPosition <= map[i].posTop() + map[i].Height() - 1)
                 {
                     //RIGHT collision. (platWidth / 2 - 1) - even if player is in platform 
                     // (from left) and don't touch the middle he collides with left
 
-                    if (buvoKairej && (playerLeftPosition + playerWidth) + 1 >= map[i].posLeft()
-                        && (playerLeftPosition + playerWidth) <= map[i].posLeft() + platWidth)
+                    if (buvoKairej && (str.playerLeftPosition + str.playerWidth) + 1 >= map[i].posLeft()
+                        && (str.playerLeftPosition + str.playerWidth) <= map[i].posLeft() + map[i].Width())
                     {
-                        playerLeftPosition = map[i].posLeft() - playerWidth;
+                        str.playerLeftPosition = map[i].posLeft() - str.playerWidth;
                         stopRight = true;// stops moving right
-                        //   kolDesine = true;
+
                         break;
                     }
                     else stopRight = false;
@@ -312,12 +344,12 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     //LEFT collision. (platWidth / 2 - 1) - even if player is in platform 
                     // (from right) and don't touch the middle he collides with right
 
-                    if (buvoDesinej && playerLeftPosition - 1 <= map[i].posLeft() + platWidth
-                        && playerLeftPosition >= map[i].posLeft())
+                    if (buvoDesinej && str.playerLeftPosition - 1 <= map[i].posLeft() + map[i].Width()
+                        && str.playerLeftPosition >= map[i].posLeft())
                     {
-                        playerLeftPosition = map[i].posLeft() + platWidth;
+                        str.playerLeftPosition = map[i].posLeft() + map[i].Width();
                         stopLeft = true;// stops moving left
-                        //  kolKaire = true;
+
                         break;
                     }
                     else stopLeft = false;
@@ -329,209 +361,54 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     stopLeft = false;
                 }
 
-                //----------------------------------------------------------------------------------------------------------------------
-
-
             }
 
-        }
-        //-------------------------------------------------------------------------------------------------
-        void jumpTimer_Tick(GT.Timer timer)
+        }// SonuKolizija eind
+
+        static void JudejimasX(ref int buvusKaires,  bool stopLeft, bool stopRight, ref PlayerStruct str, Gadgeteer.Modules.GHIElectronics.Joystick joystick, Gadgeteer.Modules.GHIElectronics.DisplayT43 displayT43)
+        {
+            //JUDEJIMAS I KAIRE/DESINE
+            double x = joystick.GetPosition().X; // joystic x scale [-1;1]
+            // move left
+            if (x < -0.3 && str.playerLeftPosition > 0 && !stopLeft)
+            {
+                buvusKaires = str.playerLeftPosition;
+                str.playerLeftPosition -= 5;
+            }
+            // move right
+            else if (x > 0.7 && str.playerLeftPosition < displayT43.Width - str.playerWidth
+                                                                     && !stopRight)
+            {
+                buvusKaires = str.playerLeftPosition;
+                str.playerLeftPosition += 5;
+            }
+        }// JudejimasX end
+
+        static void JudejimasY(ref int buvusVirsaus, ref PlayerStruct str, Gadgeteer.Modules.GHIElectronics.Joystick joystick)
         {
             double y = joystick.GetPosition().Y;
 
             //Jump part
-            if (!jumped) // if didn't jump
+            if (!str.jumped) // if didn't jump
             {
                 if (y >= 0.7/*e.KeyCode == Keys.Space*/) // and jumps
                 {
-                    jumped = true;
-                    power = jumpPower;
+                    str.jumped = true;
+                    str.power = str.jumpPower;
                 }
             }
 
             //Jump
-            if (jumped)
+            if (str.jumped)
             {
-             //Zaidejas.Top  -= power;
-             //buvusVirsaus = Zaidejas.Top;
-                
-                buvusVirsaus = playerTopPosition;
-                playerTopPosition -= power;
-                power -= 3;
+                //Zaidejas.Top  -= power;
+                //buvusVirsaus = Zaidejas.Top;
+
+                buvusVirsaus = str.playerTopPosition;
+                str.playerTopPosition -= str.power;
+                str.power -= 3;
             }
-
-         
-            Canvas.SetTop(player, playerTopPosition);
-            
- //        // Platform check loop                            
-            //for (int i = 0; i < platformId; i++)
-            //{
-
-            //    buvoVirsui = false;
-            //    buvoApacioj = false;
-
-
-            //    // if (buvusVirsaus < platformMap[i].Top) // zmogeliukas gali but ir prasmeges
-            //    if (buvusVirsaus < (int)platformMap[i].posTop())
-            //    {
-            //        buvoVirsui = true;
-
-            //        //buvoDesinej = false;
-            //        //buvoKairej = false;
-            //        //buvoApacioj = false;
-            //    }
-
-            //   // else if (buvusVirsaus > platformMap[i].Top)
-            //    else if (buvusVirsaus > (int)platformMap[i].posTop())
-            //    {
-            //        buvoApacioj = true;
-
-            //        //buvoVirsui = false;
-            //        //buvoDesinej = false;
-            //        //buvoKairej = false;
-            //    }
-            //    //------------------------------------------------------------------------------------------------------------------
-
-
-            //    //--------------------------------------------------------------------------------------------------
-            //    if ((playerLeftPosition + playerWidth) > platformMap[i].posLeft()
-            //                  && playerLeftPosition < platformMap[i].posLeft() + platWidth)
-            //    {
-            //        //TOP collision. (platHeight/2 -1) - even if player is in platform 
-            //        // (from top) and doesn't touch the middle he is set on top 
-
-            //        if (buvoVirsui && playerTopPosition + playerHeight >= platformMap[i].posTop()
-            //            && playerTopPosition + playerHeight <= platformMap[i].posTop() + platHeight + System.Math.Abs(power))
-            //        {
-            //            playerTopPosition = platformMap[i].posTop() - playerHeight;
-            //            jumped = false;
-            //            //  kolVirsus = true;
-            //            break;
-
-            //        }
-
-            //        //BOTTOM collision. (platHeight/2 + 1) - even if player is in platform 
-            //        //(from bottom) and don't touch the middle he collides with bottom 
-
-            //        if (buvoApacioj && playerTopPosition <= platformMap[i].posTop() + platHeight
-            //            && playerTopPosition >= platformMap[i].posTop() - System.Math.Abs(power))
-            //        {
-            //            playerTopPosition = platformMap[i].posTop() + platHeight;
-            //            power = -1;// without this player gets stuck on platform bottom
-            //            // kolAplacia = true;
-            //            break;
-            //        }
-            //    }
-            //    else jumped = true; // if player steps off platform - he falls
-            //    //}
-            //    //--------------------------------------------------------------------------------------------------
-            //}
-
-            //// the very bottom collision
-            //if (playerTopPosition + playerHeight >= displayT43.Height)
-            //{
-            //    playerTopPosition = displayT43.Height - playerHeight;
-            //    jumped = false;
-            //}
-
-            ////--------------------------------------------------------------------------------------------------------- 
-    
-           VirsausKolizija(platformId, platformMap,  buvusVirsaus, playerLeftPosition, ref playerTopPosition,  playerWidth,  playerHeight,  platWidth,  platHeight, ref  jumped, ref  power,  displayT43);
-            
-            //JUDEJIMAS I KAIRE/DESINE
-           double x = joystick.GetPosition().X; // joystic x scale [-1;1]
-            // move left
-            if (x < -0.3 && playerLeftPosition > 0 && !stopLeft)
-            {
-                buvusKaires = playerLeftPosition;
-                playerLeftPosition -= 5;
-            }
-            // move right
-            else if (x > 0.7 && playerLeftPosition < displayT43.Width - playerWidth 
-                                                                     && !stopRight)
-            {
-                buvusKaires = playerLeftPosition;
-                playerLeftPosition += 5;
-            }
-
-            Canvas.SetLeft(player, playerLeftPosition);// update player left posti
-     //---------------------------------------------------------------------------------------------------------
-      
-     // for (int i = 0; i < platformId; i++)
-     // {
-     //     buvoKairej = false;
-     //     buvoDesinej = false;
-
-     //     //-------------------------------------------------------------------------------------------------
-     //     //Buvusi pozicija
-     //     if (buvusKaires < platformMap[i].posLeft() && buvusKaires + playerWidth < platformMap[i].posLeft()
-     //&& ((playerTopPosition < platformMap[i].posTop() || playerTopPosition + playerHeight < playerTopPosition) || (platformMap[i].posTop() + platHeight > playerTopPosition
-     //|| playerTopPosition + playerHeight < platformMap[i].posTop() + platHeight)))
-     //     {
-     //         buvoKairej = true;
-
-             
-     //     }
-     //     else if (buvusKaires > platformMap[i].posLeft() + platWidth && buvusKaires + playerWidth > platformMap[i].posLeft() + platWidth
-     //        && ((playerTopPosition < platformMap[i].posTop() || playerTopPosition + playerHeight < playerTopPosition) || (platformMap[i].posTop() + platHeight > playerTopPosition
-     //        || playerTopPosition + playerHeight < platformMap[i].posTop() + platHeight)))
-     //     {
-     //         buvoDesinej = true;
-
-              
-     //     }
-                
-         
-     // //---------------------------------------------------------------------------------------------------------------------
-     //  if (playerTopPosition + playerHeight >= platformMap[i].posTop() + 1
-     //                        && playerTopPosition <= platformMap[i].posTop() + platHeight - 1)
-     //           {
-     //               //RIGHT collision. (platWidth / 2 - 1) - even if player is in platform 
-     //               // (from left) and don't touch the middle he collides with left
-
-     //               if (buvoKairej && (playerLeftPosition + playerWidth) + 1 >= platformMap[i].posLeft()
-     //                   && (playerLeftPosition + playerWidth) <= platformMap[i].posLeft() + platWidth)
-     //               {
-     //                   playerLeftPosition = platformMap[i].posLeft() - playerWidth;
-     //                   stopRight = true;// stops moving right
-     //                   //   kolDesine = true;
-     //                   break;
-     //               }
-     //               else stopRight = false;
-
-     //               //LEFT collision. (platWidth / 2 - 1) - even if player is in platform 
-     //               // (from right) and don't touch the middle he collides with right
-
-     //               if (buvoDesinej && playerLeftPosition - 1 <= platformMap[i].posLeft() + platWidth
-     //                   && playerLeftPosition >= platformMap[i].posLeft())
-     //               {
-     //                   playerLeftPosition = platformMap[i].posLeft() + platWidth;
-     //                   stopLeft = true;// stops moving left
-     //                   //  kolKaire = true;
-     //                   break;
-     //               }
-     //               else stopLeft = false;
-
-     //           }
-     //           else
-     //           {
-     //               stopRight = false;
-     //               stopLeft = false;
-     //           }
-     //           Canvas.SetTop(player, playerTopPosition); // update player top position
-     //////----------------------------------------------------------------------------------------------------------------------
-      
-      
-     // }
-
-
-            sonuKolizija(platformId, platformMap,  buvusKaires, ref playerLeftPosition, playerTopPosition, playerWidth, playerHeight, platWidth,  platHeight, ref stopRight, ref  stopLeft,  displayT43);
-
-            Canvas.SetTop(player, playerTopPosition); // update player top position
-        }
-
-       
+        }// JudejimasY end
 
     }
 }

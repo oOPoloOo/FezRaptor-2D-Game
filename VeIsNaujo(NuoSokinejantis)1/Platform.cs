@@ -22,6 +22,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
         
          int left = 0;
          int top = 0;
+         int widthRect;
+         int heightRect;
       
         public Platform()
         { 
@@ -32,6 +34,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
             this.platformRectangle = new Rectangle();
             this.platformRectangle.Height = Height;
             this.platformRectangle.Width = Width;
+            widthRect = Width;
+            heightRect = Height;
           
             platformRectangle.Fill = new SolidColorBrush(Colors.Orange);
         }
@@ -55,6 +59,16 @@ namespace VeIsNaujo_NuoSokinejantis_1
         {
             return top;
         }
+
+        public int Height()
+        {
+            return heightRect;
+        }
+        public int Width()
+        {
+            return widthRect;
+        }
+
         public void paintBlue()
         {
             platformRectangle.Fill = new SolidColorBrush(Colors.Blue);
