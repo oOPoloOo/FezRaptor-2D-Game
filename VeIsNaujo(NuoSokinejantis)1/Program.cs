@@ -13,9 +13,11 @@ using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
-//Sudejau Player duomenis i struct
+//Pc kodas perdarytas ant Raptoriaus
 //Sudejau judejima X ir Y i metodus
 //Pastebejau, kad netinkamai veikia kairiausio kubelio kol.
+//Perdarant is spyglio pc versijos - nera parametro visible.
+// playerStruct Bottom kazkodel neveike, todel viska reikes rasyt Top + Heigth ...
 
 
 
@@ -27,7 +29,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
     {
         Window mainWindow;
         Canvas layout;
-       
+        Text label;// Gyvybes
+        Text label2;// Score
         Rectangle player;
 
         public struct PlayerStruct
@@ -41,29 +44,64 @@ namespace VeIsNaujo_NuoSokinejantis_1
            // public bool jumped = true;
            //public int power;
             public int playerTopPosition;
+           // public int playerBottomPosition;
             public int playerLeftPosition;
+           // public int playerRightPosition;
             public int playerHeight;
             public int playerWidth;
             public int jumpPower;
             public bool jumped;
             public int power;
-
-           public PlayerStruct(int playerTopPos, int playerLeftPos, int playerH, int playerW, int jumpP, bool jmp, int pow)
+            public bool antSpyglPavirsiaus;
+            public int gyvybes;
+            public int gyvybiuSkaitiklis;
+            public bool neAntZemes;
+          //  playerBottomPosition = playerTopPosition + playerHeight;
+           public PlayerStruct(int playerTopPos, int playerLeftPos, int playerH, int playerW, int jumpP, bool jmp, int pow, bool antPavirsiaus, int lives, int livesCount, bool neZeme)
             {
                 playerTopPosition = playerTopPos;
+                
                 playerLeftPosition = playerLeftPos;
+                
                 playerHeight = playerH;
                 playerWidth = playerW;
                 jumpPower = jumpP;
                 jumped = jmp;
                 power = pow;
+                antSpyglPavirsiaus = antPavirsiaus;
+                gyvybes = lives;
+                gyvybiuSkaitiklis = livesCount;
+                neAntZemes = neZeme;
+
+                //playerBottomPosition = playerTopPosition + playerHeight;
+                //playerRightPosition = playerLeftPosition + playerWidth;
             }
         }
-        PlayerStruct playerStruct = new PlayerStruct(0,250,30,30,30,true,0);
-        
-       
-        
+        PlayerStruct playerStruct = new PlayerStruct(0,250,30,30,30,true,0,false,3,0,true);
 
+
+
+        //public struct SpyglysStruct
+        //{
+        //    public int spygliaiId;
+        //    public int Heigth;
+        //    public int Width;
+
+        //    public SpyglysStruct(int id, int heigth, int width)
+        //    {
+        //        spygliaiId = id;
+        //        Heigth = heigth;
+        //        Width = width;
+        //    }
+        //}
+        //SpyglysStruct spygl = new SpyglysStruct(0, 10, 10);
+
+        //Spygliai
+        //int spygliaiId = 0;
+        //int spyglHeigth = 10;
+        //int spyglWidth = 10;
+        //bool spyglKrist = false;
+        //Platform[] spygliaiMap = new Platform[4];
 
         //Platform parameters
         ////If platform parameters changes, position of platform also changes
@@ -90,18 +128,32 @@ namespace VeIsNaujo_NuoSokinejantis_1
         
        
         Platform[] platformMap = new Platform[200];
-       
+      
 
         //Buvusi zaidejo pozicija, kolizijai geriau aptikti
         int buvusKaires;
         int buvusVirsaus;
-       
-        
+
         //Spygliai
-        Platform[] spygliaiMap = new Platform[4]; 
+        //bool spyglKrist = false;
+        //bool pirmasKartas = true;
+        //bool spyglNukrito = false;
+        static int spygliuMaxSk = 10;
         int spygliaiId = 0;
-        int spyglHeight = 10;
-        int spyglWidth  = 10;
+        int spyglHeigth = 30;
+        int spyglWidth = 10;
+        bool[] spyglKrist = new bool[spygliuMaxSk];
+        bool[] pirmasKartas = new bool[spygliuMaxSk];
+        bool[] spyglNukrito = new bool[spygliuMaxSk];
+        Platform[] spygliaiMap = new Platform[spygliuMaxSk];
+
+        //Lava
+        static int lavosMaxSk = 10;
+        int lavaId = 0;
+        int lavaHeigth = 30;
+        int lavaWidth = 30;
+        Platform[] lavaMap = new Platform[lavosMaxSk];
+       
         
         void ProgramStarted()
         {
@@ -116,7 +168,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             jumpTimer.Tick += new GT.Timer.TickEventHandler(jumpTimer_Tick);
             jumpTimer.Start();
 
-          
+            
 
         }
 
@@ -143,6 +195,27 @@ namespace VeIsNaujo_NuoSokinejantis_1
             player.Fill = new SolidColorBrush(Colors.Red);
             layout.Children.Add(player);
 
+            //label
+            label = new Text();
+            label.Height = 272;// buvo 240
+            label.Width = 480;// buvo 320
+            label.ForeColor = Colors.White;
+            label.Font = Resources.GetFont(Resources.FontResources.NinaB);
+            layout.Children.Add(label);
+            Canvas.SetLeft(label, 0);
+            Canvas.SetTop(label, 0);
+
+            //Spygliai
+            for (int i = 0; i < spygliuMaxSk; i++)
+            {
+                spyglKrist[i] = false;
+                pirmasKartas[i] = true;
+                spyglNukrito[i] = false;
+
+            }
+
+
+
             // Platformer map
             string[] map = new string[12];
             map[0] =  ".....................................";
@@ -151,12 +224,12 @@ namespace VeIsNaujo_NuoSokinejantis_1
             map[3] =  ".....................................";
             map[4] =  ".....................................";
             map[5] =  ".....................................";
-            map[6] =  "......S..............................";
-            map[7] =  "..#..................................";
-            map[8] =  "........#............................";
-            map[9] =  ".....#........#......................";
-            map[10] = "...........####......................";
-            map[11] = ".#...#..#............................";
+            map[6] =  ".....................................";
+            map[7] =  ".....................................";
+            map[8] =  ".#...S...S..#........................";
+            map[9] =  ".......S.............................";
+            map[10] = "...#.................................";
+            map[11] = ".###LLLLLLLLL#.......................";
 
 
             for (int i = 0; i < map.Length; i++)
@@ -172,11 +245,19 @@ namespace VeIsNaujo_NuoSokinejantis_1
                  
                     if (map[i][j] == 'S')
                     {
-                        spygliaiMap[spygliaiId] = new Platform(spyglWidth, spyglHeight);
+                        spygliaiMap[spygliaiId] = new Platform(spyglWidth, spyglHeigth);
                         spygliaiMap[spygliaiId].paintBlue();
                         // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
                         spygliaiMap[spygliaiId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
                         spygliaiId++;
+                    }
+                    if (map[i][j] == 'L')
+                    {
+                        lavaMap[lavaId] = new Platform(lavaWidth, lavaHeigth);
+                        lavaMap[lavaId].paintMagenta();
+                        // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
+                        lavaMap[lavaId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
+                        lavaId++;
                     }
                 }
             }
@@ -192,6 +273,11 @@ namespace VeIsNaujo_NuoSokinejantis_1
             for (int i = 0; i < spygliaiId; i++)
             {
                 layout.Children.Add(spygliaiMap[i].get());
+            }
+
+            for (int i = 0; i < lavaId; i++)
+            {
+                layout.Children.Add(lavaMap[i].get());
             }
 
             mainWindow.Child = layout;
@@ -221,15 +307,25 @@ namespace VeIsNaujo_NuoSokinejantis_1
             //-------------------------------------------------------------------------------------------------------
             // SPYGLIO KOLIZIJA IR JUDEJIMAS
             //------------------------------------------------------------------------------------------------------
-            //... Veliau
+            
+            //Spygliu ciklas
+            for (int i = 0; i < spygliaiId; i++)
+               
+                SpyglioKritimas(ref playerStruct, ref spygliaiMap, ref platformMap, spyglKrist, pirmasKartas, spyglNukrito, buvusVirsaus, i, ref lavaMap, displayT43, platformId, lavaId);
+               
+
+            //Lava
+                Lava(ref playerStruct, ref spygliaiMap, ref lavaMap, buvusVirsaus,lavaId);
+            //   Canvas.SetTop(player, playerStruct.playerTopPosition); // update player top position
+                label.TextContent = "Gyvybes: " + playerStruct.gyvybes;
 
         }//jumpTimer end
       
         
         //-------------------------------------------------------------------------------------------------
         static void VirsausKolizija(int mapId, Platform[] map, int buvusVirsaus, ref PlayerStruct str, Gadgeteer.Modules.GHIElectronics.DisplayT43 displayT43)
-        {
-
+        {///DARAU PAKEITIMUS - reikia kad player butu ne struct, o platform klasej, kitaip nesigaus padaryt koliziju kitiem obj
+            
             bool buvoVirsui = false;
             bool buvoApacioj = false;
 
@@ -281,7 +377,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         break;
                     }
                 }
-                else str.jumped = true; // if player steps off platform - he falls
+               // else str.jumped = true; // if player steps off platform - he falls
+                else if (!str.antSpyglPavirsiaus) 
+                    str.jumped = true;
                
             }
 
@@ -290,6 +388,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             {
                 str.playerTopPosition = displayT43.Height - str.playerHeight;
                 str.jumped = false;
+                str.neAntZemes = false;
             }
 
         }// VirsasuKolizija end
@@ -410,5 +509,231 @@ namespace VeIsNaujo_NuoSokinejantis_1
             }
         }// JudejimasY end
 
+        static void SpyglioKritimas(ref PlayerStruct Zaidejas, ref Platform[] spygl, ref Platform[] platformMap, bool[] krist, bool[] pirmasKartas, bool[] spyglNukrito, int buvusZaidejoTop, int index, ref Platform[] lavaMap, Gadgeteer.Modules.GHIElectronics.DisplayT43 displayT43, int platId, int lavaId)
+        {
+            int buvusVirsaus = spygl[index].posTop();// priskyrt buvusiai spyglio top possision
+
+
+            if (spygl[index].isVisible())
+            {
+
+                if (Zaidejas.playerLeftPosition + Zaidejas.playerHeight >= spygl[index].posLeft() && Zaidejas.playerLeftPosition <= spygl[index].posRigth() && Zaidejas.playerTopPosition + Zaidejas.playerHeight >= spygl[index].posTop()) krist[index] = true;
+
+
+                if (krist[index] && !spyglNukrito[index])// parasyt salyga dar viena, kad nevykdytu, jei nukritus
+                {
+
+                    if (pirmasKartas[index])
+                    {
+                        System.Threading.Thread.Sleep(20);
+                        pirmasKartas[index] = false;
+                    }
+
+
+
+                    // spygl[index].posTop() = spygl[index].posTop() + 20;
+                    spygl[index].set(spygl[index].posLeft(), spygl[index].posTop() + 10);// buvo 20 bet per greitai krenta
+
+                    Zaidejas.antSpyglPavirsiaus = false;// kai sitas yra neleidzia pasokt nuo spyglio
+
+                }
+            }//if(isVisible) end
+          
+                    
+            bool buvoApacioj = false;
+            bool buvoVirsui = false;
+
+            for (int i = 0; i < platId; i++)
+            {
+
+                buvoApacioj = false;
+                buvoVirsui = false;
+
+                if (buvusVirsaus < platformMap[i].posTop()) // zmogeliukas gali but ir prasmeges // Zinau, kad spyglys kris ant platformu is virsaus
+                {
+                    buvoVirsui = true;
+
+                }
+
+                else if (buvusVirsaus > platformMap[i].posTop())
+                {
+                    buvoApacioj = true;
+                }
+                ////------------------------------------------------------------------------------------------------------------------
+
+                if (spygl[index].isVisible())
+                {
+                    //Spyglio Kolizija Su platforma
+                    if ((spygl[index].posRigth()) > platformMap[i].posLeft()
+                        && spygl[index].posLeft() < platformMap[i].posRigth())
+                    {
+                        //Spyglio apacios su plat virsasu collision. 
+                        if (buvoVirsui && spygl[index].posBottom() >= platformMap[i].posTop()
+                            && spygl[index].posBottom() <= platformMap[i].posBottom() + System.Math.Abs(20))
+                        {
+                            //spygl[index].posTop() = platformMap[i].posTop() - spygl[index].Height();
+                            spygl[index].set(spygl[index].posLeft(), platformMap[i].posTop() - spygl[index].Height());
+                            krist[index] = false;
+                            spyglNukrito[index] = true;
+                            break;
+                        }
+
+                    }
+                }// Spyglio Kolizija su platforma end
+            }// platformu for end
+
+
+            for (int i = 0; i < lavaId; i++)
+            {
+
+                buvoApacioj = false;
+                buvoVirsui = false;
+
+                if (buvusVirsaus < lavaMap[i].posTop()) // zmogeliukas gali but ir prasmeges // Zinau, kad spyglys kris ant platformu is virsaus
+                {
+                    buvoVirsui = true;
+
+                }
+
+                else if (buvusVirsaus > lavaMap[i].posTop())
+                {
+                    buvoApacioj = true;
+                }
+                ////------------------------------------------------------------------------------------------------------------------
+
+                if (spygl[index].isVisible())
+                {
+                    //Spyglio Kolizija Su platforma
+                    if ((spygl[index].posRigth()) > lavaMap[i].posLeft()
+                        && spygl[index].posLeft() < lavaMap[i].posRigth())
+                    {
+                        //Spyglio apacios su plat virsasu collision. 
+                        if (buvoVirsui && spygl[index].posBottom() >= lavaMap[i].posTop()
+                            && spygl[index].posBottom() <= lavaMap[i].posBottom() + System.Math.Abs(20))
+                        {
+                            //spygl[index].Top = lavaMap[i].Top - spygl[index].Height;
+                            spygl[index].set(spygl[index].posLeft(), lavaMap[i].posTop() - spygl[index].Height());
+                            krist[index] = false;
+                            spyglNukrito[index] = true;
+                            break;
+                        }
+
+                    }
+                }// Spyglio Kolizija su lava end
+            }
+
+            
+            buvoApacioj = false;
+            buvoVirsui = false;
+
+            if (buvusVirsaus < buvusZaidejoTop && !spyglNukrito[index])
+            {
+                buvoVirsui = true;
+
+            }
+            else if ((buvusVirsaus + System.Math.Abs(spygl[index].Height() - Zaidejas.playerHeight) >= buvusZaidejoTop || buvusVirsaus > buvusZaidejoTop) && buvusVirsaus + spygl[index].Height() >= buvusZaidejoTop + Zaidejas.playerHeight)
+            {
+                buvoApacioj = true;
+            }
+
+
+            if (spygl[index].isVisible())
+            {
+                //Zaidejo kolizija su spygliu. DAR NEBAIGTA - bandau padaryt, kad galetum uzlipt ant spyglio, bet po kurio laiko jis pradetu krist
+                if (Zaidejas.playerLeftPosition + Zaidejas.playerWidth > spygl[index].posLeft()
+                    && Zaidejas.playerLeftPosition < spygl[index].posRigth()) // GALIMA pridet tikrinima ar nepasokes - bbus efektyviau
+                {
+                    //TOP collision. 
+                    if (buvoApacioj && Zaidejas.playerTopPosition + Zaidejas.playerHeight >= spygl[index].posTop())
+                    {
+                        Zaidejas.playerTopPosition = spygl[index].posTop() - Zaidejas.playerHeight;
+                        Zaidejas.jumped = false;
+                        Zaidejas.antSpyglPavirsiaus = true;
+
+
+                    }
+
+                    //BOTTOM collision. 
+                    if (buvoVirsui && spygl[index].posBottom() >= Zaidejas.playerTopPosition)
+                    {
+                        Zaidejas.gyvybes--;
+
+
+                        // Form EkranasMetVid = new Form();// veikia taip pat kaip ir paduoti parametrai
+                        //  spygl[index].Visible = false;
+                        spygl[index].Hide();
+
+                    }
+
+                }
+                else // Reikia Tvarkyt 
+                {
+
+                    Zaidejas.antSpyglPavirsiaus = false;
+
+                }// Spyglio kol su zaideju end
+            }//isVisible end
+            //--------------------------------------------------------------------------------------------------------------------
+
+            // the very bottom collision
+            if (buvusVirsaus + spygl[index].Height() + 20 >= displayT43.Height || spygl[index].posBottom() >= displayT43.Height && Zaidejas.jumped)
+            {
+                //spygl[index].Top = Ekranas.Height - Zaidejas.Height;
+                spygl[index].set(spygl[index].posLeft(), displayT43.Height - Zaidejas.playerHeight);
+                spyglNukrito[index] = true;
+            }
+
+        }// SpyglioKritimas end
+
+        //-------------------------------------------------------------------------------------------------------------
+        static void Lava(ref PlayerStruct Zaidejas, ref Platform[] spygl, ref Platform[] lavaMap,int zaidejoBuvusTop, int lavaId)
+        {
+
+            bool buvoVirsui;
+            int smigti = 0;
+
+            for (int i = 0; i < lavaId; i++)
+            {
+
+
+                buvoVirsui = false;
+
+                if (zaidejoBuvusTop < lavaMap[i].posTop()) // zmogeliukas gali but ir prasmeges // Zinau, kad spyglys kris ant platformu is virsaus
+                {
+                    buvoVirsui = true;
+
+                }
+
+                if ((Zaidejas.playerLeftPosition + Zaidejas.playerWidth) > lavaMap[i].posLeft()
+                    && Zaidejas.playerLeftPosition < lavaMap[i].posRigth())
+                {
+                    //TOP collision. (platHeight/2 -1) - even if player is in platform 
+                    // (from top) and doesn't touch the middle he is set on top 
+
+                    if (buvoVirsui && Zaidejas.playerTopPosition + Zaidejas.playerHeight >= lavaMap[i].posTop()
+                        && Zaidejas.playerTopPosition + Zaidejas.playerHeight <= lavaMap[i].posBottom() + System.Math.Abs(Zaidejas.power))
+                    {
+                        //if(Zaidejas.Left >= lavaMap[i].Left // Bandziau padaryt, kad pamazu smigtu i lava, jei jos apsuptas
+                        //  && Zaidejas.Right < lavaMap[i].Left + lavaMap[i].Width)
+                        //{
+                        // Zaidejas.Top = lavaMap[i].Top - Zaidejas.Height - smigti;
+                        // smigti += 2;
+                        //}
+                        Zaidejas.playerTopPosition = lavaMap[i].posTop() - Zaidejas.playerHeight;
+
+                        System.Threading.Thread.Sleep(8);//duoda zmogeliuko mirgciojima 
+
+                        if (Zaidejas.gyvybiuSkaitiklis > 5)// Reguliuoja gyvybiu ateminejimo greiti
+                        {
+                            Zaidejas.gyvybes--;
+                            Zaidejas.gyvybiuSkaitiklis = 0;
+                        }
+                        Zaidejas.gyvybiuSkaitiklis++;
+                        break;
+
+                    }
+                }
+            }
+        }
     }
 }

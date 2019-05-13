@@ -35,8 +35,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             this.platformRectangle.Height = Height;
             this.platformRectangle.Width = Width;
             widthRect = Width;
-            heightRect = Height;
-          
+            heightRect = Height;                   
             platformRectangle.Fill = new SolidColorBrush(Colors.Orange);
         }
         public void set(int leftPosition, int topPosition)
@@ -55,11 +54,18 @@ namespace VeIsNaujo_NuoSokinejantis_1
         {
             return left;
         }
+        public int posRigth()
+        {
+            return (left + widthRect);
+        }
         public int posTop()
         {
             return top;
         }
-
+        public int posBottom()
+        {
+            return (top + heightRect);
+        }
         public int Height()
         {
             return heightRect;
@@ -72,6 +78,18 @@ namespace VeIsNaujo_NuoSokinejantis_1
         public void paintBlue()
         {
             platformRectangle.Fill = new SolidColorBrush(Colors.Blue);
+        }
+        public void paintMagenta()
+        {
+            platformRectangle.Fill = new SolidColorBrush(Colors.Magenta);
+        }
+        public bool isVisible()
+        {
+            return platformRectangle.IsVisible;
+        }
+        public void Hide()
+        {
+            platformRectangle.Visibility = Visibility.Hidden; 
         }
     }
 }
