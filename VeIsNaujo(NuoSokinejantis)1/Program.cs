@@ -13,9 +13,16 @@ using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
-//Pirmas lygis V4
+//Pirmas lygis V6
 //Mazinu visus objiektus, kad ekrane daugiau matytusi
 //Kazkodel ant lavos ne visada sokineja - sutvarkiau pridejes lavos kolizijoj jumped = false;
+//Sumazinus lygi - dauguma komponentu 20*20. Spyglius gerai aptinka tik zeme.
+//Pro lava jie isvis prasmenga, platormose istringa - neisikisa nei i viena puse, tiesiog vidui.
+//Nors ant pc versijos viskas veikia gerai.
+//Sutvarkiau spygliu prasmegimo problema - nereikia tikrint ar atejo is virsasu, nes visasda kris is viesasu
+//Sutvarkiau spygliu sonu problema(kad nejo prieit)
+//sonu kolizijos aukscio tikrinime buvo parasyta str.playerTopPosition + map[i].Height(), vietoj str.playerTopPosition + str.playerHeight
+//Sumazinus 20*20 neveikia - fizikos geros, bet vaizdas uzstringa kitur.
 
 
 
@@ -79,7 +86,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 //playerRightPosition = playerLeftPosition + playerWidth;
             }
         }
-        PlayerStruct playerStruct = new PlayerStruct(0,0,30,30,30,true,0,false,3,0,true,false);
+        PlayerStruct playerStruct = new PlayerStruct(0,400,20,20,25,true,0,false,3,0,true,false);
 
 
 
@@ -107,8 +114,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
         //Platform parameters
         ////If platform parameters changes, position of platform also changes
-        int platHeight = 30;// Tu
-        int platWidth = 30;// buvo 30
+        int platHeight = 25;// Tu
+        int platWidth = 25;// buvo 30
         
         //Collision parameters
         bool stopLeft = false;// makes stop move left
@@ -142,7 +149,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
         //bool spyglNukrito = false;
         static int spygliuMaxSk = 10;
         int spygliaiId = 0;
-        int spyglHeigth = 30;
+        int spyglHeigth = 20;
         int spyglWidth = 10;
         bool[] spyglKrist = new bool[spygliuMaxSk];
         bool[] pirmasKartas = new bool[spygliuMaxSk];
@@ -152,8 +159,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
         //Lava
         static int lavosMaxSk = 10;
         int lavaId = 0;
-        int lavaHeigth = 30;
-        int lavaWidth = 30;
+        int lavaHeigth = 25;
+        int lavaWidth = 25;
         Platform[] lavaMap = new Platform[lavosMaxSk];
        
         
@@ -219,19 +226,36 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
 
             // Platformer map
+            //Sunki versija
+            //string[] map = new string[12];
+            //map[0] = ".....................................";
+            //map[1] = ".....................................";
+            //map[2] = ".....................................";
+            //map[3] = ".....................................";
+            //map[4] = ".................#...................";
+            //map[5] = "...........S...###...................";
+            //map[6] = ".#...S...S...S.......................";
+            //map[7] = "........S............................";
+            //map[8] = ".....................................";
+            //map[9] = ".....................................";
+            //map[10] = "...#................................";
+            //map[11] = "####LLLLLLLLL#......................";
+
+            //Lengva versija
             string[] map = new string[12];
-            map[0] =  ".....................................";
-            map[1] =  ".....................................";
-            map[2] =  ".....................................";
-            map[3] =  ".....................................";
-            map[4] =  ".....................................";
-            map[5] =  "...............#.....................";
-            map[6] =  ".#.........S.........................";
-            map[7] =  ".....S...S...S.......................";
-            map[8] =  "........S............................";
-            map[9] =  ".....................................";
-            map[10] = "...#.................................";
-            map[11] = "####LLLLLLLLL#.......................";
+            map[0] = ".....................................";
+            map[1] = ".....................................";
+            map[2] = ".....................................";
+            map[3] = ".....................................";
+            map[4] = ".................#...................";
+            map[5] = "...........S...###...................";
+            map[6] = ".#...S...S...S.......................";
+            map[7] = ".......S.............................";
+            map[8] = ".....................................";
+            map[9] = ".....................................";
+            map[10] = "...#................................";
+            map[11] = "####LLLLLLLLL#......................";
+           
 
 
             for (int i = 0; i < map.Length; i++)
@@ -431,7 +455,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
                 //---------------------------------------------------------------------------------------------------------------------
 
-                if (str.playerTopPosition + map[i].Height() >= map[i].posTop() + 1
+                if (str.playerTopPosition + str.playerHeight >= map[i].posTop() + 1 //Taisiau, kaip ir gerai
                                       && str.playerTopPosition <= map[i].posTop() + map[i].Height() - 1)
                 {
                     //RIGHT collision. (platWidth / 2 - 1) - even if player is in platform 
@@ -556,16 +580,16 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 buvoApacioj = false;
                 buvoVirsui = false;
 
-                if (buvusVirsaus < platformMap[i].posTop()) // zmogeliukas gali but ir prasmeges // Zinau, kad spyglys kris ant platformu is virsaus
-                {
-                    buvoVirsui = true;
+                //if (buvusVirsaus < platformMap[i].posTop() /*|| buvusVirsaus <= platformMap[i].posTop()*/) // zmogeliukas gali but ir prasmeges // Zinau, kad spyglys kris ant platformu is virsaus
+                //{
+                //    buvoVirsui = true;
 
-                }
+                //}
 
-                else if (buvusVirsaus > platformMap[i].posTop())
-                {
-                    buvoApacioj = true;
-                }
+                //else if (buvusVirsaus > platformMap[i].posTop())
+                //{
+                //    buvoApacioj = true;
+                //}
                 ////------------------------------------------------------------------------------------------------------------------
 
                 if (spygl[index].isVisible())
@@ -575,7 +599,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         && spygl[index].posLeft() < platformMap[i].posRigth())
                     {
                         //Spyglio apacios su plat virsasu collision. 
-                        if (buvoVirsui && spygl[index].posBottom() >= platformMap[i].posTop()
+                        if (/*buvoVirsui &&*/ spygl[index].posBottom() >= platformMap[i].posTop()
                             && spygl[index].posBottom() <= platformMap[i].posBottom() + System.Math.Abs(20))
                         {
                             //spygl[index].posTop() = platformMap[i].posTop() - spygl[index].Height();
