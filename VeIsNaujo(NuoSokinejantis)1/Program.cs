@@ -13,11 +13,10 @@ using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
-//Pirmas lygis V3
-//Sutvarkiau spyglius, kad esant ant lavos pradingtu, vietoj to, kad ukeltu zaideja ant saves
-//Tai padariau pridejes i lavos metoda playerStruct.antLavosPavirsiaus tikrinima, kuris yra ir Yjudejimo metode
-//Todel nebiliko mirgsejimo
-//Pridejau kritimo is aukstai zala. Visuose kolizijose su pagrindu: lavos, platformos, zemes, spyglio. Ifas tikrina power
+//Pirmas lygis V4
+//Mazinu visus objiektus, kad ekrane daugiau matytusi
+//Kazkodel ant lavos ne visada sokineja - sutvarkiau pridejes lavos kolizijoj jumped = false;
+
 
 
 
@@ -728,6 +727,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         Zaidejas.playerTopPosition = lavaMap[i].posTop() - Zaidejas.playerHeight;
 
                         Zaidejas.antLavosPavirsiaus = true;
+                        Zaidejas.jumped = false;//Be sito nesokineja nat lavos
 
                         if (Zaidejas.power < -40) Zaidejas.gyvybes -= 20;// Kritimo is aukstai zala
                         Zaidejas.power = 0;
