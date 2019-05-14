@@ -13,11 +13,12 @@ using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
-//Pc kodas perdarytas ant Raptoriaus
-//Sudejau judejima X ir Y i metodus
-//Pastebejau, kad netinkamai veikia kairiausio kubelio kol.
-//Perdarant is spyglio pc versijos - nera parametro visible.
-// playerStruct Bottom kazkodel neveike, todel viska reikes rasyt Top + Heigth ...
+//Pirmas lygis V3
+//Sutvarkiau spyglius, kad esant ant lavos pradingtu, vietoj to, kad ukeltu zaideja ant saves
+//Tai padariau pridejes i lavos metoda playerStruct.antLavosPavirsiaus tikrinima, kuris yra ir Yjudejimo metode
+//Todel nebiliko mirgsejimo
+//Pridejau kritimo is aukstai zala. Visuose kolizijose su pagrindu: lavos, platformos, zemes, spyglio. Ifas tikrina power
+
 
 
 
@@ -53,11 +54,12 @@ namespace VeIsNaujo_NuoSokinejantis_1
             public bool jumped;
             public int power;
             public bool antSpyglPavirsiaus;
+            public bool antLavosPavirsiaus;
             public int gyvybes;
             public int gyvybiuSkaitiklis;
             public bool neAntZemes;
           //  playerBottomPosition = playerTopPosition + playerHeight;
-           public PlayerStruct(int playerTopPos, int playerLeftPos, int playerH, int playerW, int jumpP, bool jmp, int pow, bool antPavirsiaus, int lives, int livesCount, bool neZeme)
+           public PlayerStruct(int playerTopPos, int playerLeftPos, int playerH, int playerW, int jumpP, bool jmp, int pow, bool antPavirsiaus, int lives, int livesCount, bool neZeme, bool antLavos)
             {
                 playerTopPosition = playerTopPos;
                 
@@ -72,12 +74,13 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 gyvybes = lives;
                 gyvybiuSkaitiklis = livesCount;
                 neAntZemes = neZeme;
+                antLavosPavirsiaus = antLavos;
 
                 //playerBottomPosition = playerTopPosition + playerHeight;
                 //playerRightPosition = playerLeftPosition + playerWidth;
             }
         }
-        PlayerStruct playerStruct = new PlayerStruct(0,0,30,30,30,true,0,false,3,0,true);
+        PlayerStruct playerStruct = new PlayerStruct(0,0,30,30,30,true,0,false,3,0,true,false);
 
 
 
@@ -224,8 +227,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
             map[3] =  ".....................................";
             map[4] =  ".....................................";
             map[5] =  "...............#.....................";
-            map[6] =  "...........S.........................";
-            map[7] =  ".#...S...S...S.......................";
+            map[6] =  ".#.........S.........................";
+            map[7] =  ".....S...S...S.......................";
             map[8] =  "........S............................";
             map[9] =  ".....................................";
             map[10] = "...#.................................";
@@ -315,7 +318,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                
 
             //Lava
-                Lava(ref playerStruct, ref spygliaiMap, ref lavaMap, buvusVirsaus,lavaId);
+                Lava(ref playerStruct, ref spygliaiMap, ref lavaMap, buvusVirsaus, lavaId, ref player);
             //   Canvas.SetTop(player, playerStruct.playerTopPosition); // update player top position
                 label.TextContent = "Gyvybes: " + playerStruct.gyvybes;
 
@@ -360,7 +363,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     {
                         str.playerTopPosition = map[i].posTop() - str.playerHeight;
                         str.jumped = false;
-                        //  kolVirsus = true;
+
+                        if (str.power < -40) str.gyvybes -= 20;//Kritimo is aukstai zala
+                        str.power = 0;
                         break;
 
                     }
@@ -378,7 +383,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     }
                 }
                // else str.jumped = true; // if player steps off platform - he falls
-                else if (!str.antSpyglPavirsiaus) 
+                else if (!str.antSpyglPavirsiaus && !str.antLavosPavirsiaus) 
                     str.jumped = true;
                
             }
@@ -389,6 +394,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 str.playerTopPosition = displayT43.Height - str.playerHeight;
                 str.jumped = false;
                 str.neAntZemes = false;
+
+                if (str.power < -40) str.gyvybes -= 20;// Kritimo is aukstai zala
+                str.power = 0;
             }
 
         }// VirsasuKolizija end
@@ -650,6 +658,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         Zaidejas.jumped = false;
                         Zaidejas.antSpyglPavirsiaus = true;
 
+                        if (Zaidejas.power < -40) Zaidejas.gyvybes -= 20;// Kritimo is aukstai zala
+                        Zaidejas.power = 0;
+
 
                     }
 
@@ -686,11 +697,11 @@ namespace VeIsNaujo_NuoSokinejantis_1
         }// SpyglioKritimas end
 
         //-------------------------------------------------------------------------------------------------------------
-        static void Lava(ref PlayerStruct Zaidejas, ref Platform[] spygl, ref Platform[] lavaMap,int zaidejoBuvusTop, int lavaId)
+        static void Lava(ref PlayerStruct Zaidejas, ref Platform[] spygl, ref Platform[] lavaMap,int zaidejoBuvusTop, int lavaId, ref Rectangle player)
         {
 
             bool buvoVirsui;
-            int smigti = 0;
+          
 
             for (int i = 0; i < lavaId; i++)
             {
@@ -713,16 +724,14 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     if (buvoVirsui && Zaidejas.playerTopPosition + Zaidejas.playerHeight >= lavaMap[i].posTop()
                         && Zaidejas.playerTopPosition + Zaidejas.playerHeight <= lavaMap[i].posBottom() + System.Math.Abs(Zaidejas.power))
                     {
-                        //if(Zaidejas.Left >= lavaMap[i].Left // Bandziau padaryt, kad pamazu smigtu i lava, jei jos apsuptas
-                        //  && Zaidejas.Right < lavaMap[i].Left + lavaMap[i].Width)
-                        //{
-                        // Zaidejas.Top = lavaMap[i].Top - Zaidejas.Height - smigti;
-                        // smigti += 2;
-                        //}
+                       
                         Zaidejas.playerTopPosition = lavaMap[i].posTop() - Zaidejas.playerHeight;
 
-                        System.Threading.Thread.Sleep(8);//duoda zmogeliuko mirgciojima 
+                        Zaidejas.antLavosPavirsiaus = true;
 
+                        if (Zaidejas.power < -40) Zaidejas.gyvybes -= 20;// Kritimo is aukstai zala
+                        Zaidejas.power = 0;
+                       
                         if (Zaidejas.gyvybiuSkaitiklis > 5)// Reguliuoja gyvybiu ateminejimo greiti
                         {
                             Zaidejas.gyvybes--;
@@ -733,6 +742,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
                     }
                 }
+                else Zaidejas.antLavosPavirsiaus = false;
             }
         }
     }
