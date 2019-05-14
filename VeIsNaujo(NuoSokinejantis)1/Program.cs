@@ -13,16 +13,11 @@ using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
-//Pirmas lygis V6
-//Mazinu visus objiektus, kad ekrane daugiau matytusi
-//Kazkodel ant lavos ne visada sokineja - sutvarkiau pridejes lavos kolizijoj jumped = false;
-//Sumazinus lygi - dauguma komponentu 20*20. Spyglius gerai aptinka tik zeme.
-//Pro lava jie isvis prasmenga, platormose istringa - neisikisa nei i viena puse, tiesiog vidui.
-//Nors ant pc versijos viskas veikia gerai.
-//Sutvarkiau spygliu prasmegimo problema - nereikia tikrint ar atejo is virsasu, nes visasda kris is viesasu
-//Sutvarkiau spygliu sonu problema(kad nejo prieit)
-//sonu kolizijos aukscio tikrinime buvo parasyta str.playerTopPosition + map[i].Height(), vietoj str.playerTopPosition + str.playerHeight
-//Sumazinus 20*20 neveikia - fizikos geros, bet vaizdas uzstringa kitur.
+//Pirmas lygis V7
+// Pradejau daryt, kad mirus ismestu uzrasa
+// Bet reikia, kad ji rodytu prieky, galbut butu didesnis
+//Taip pat padaryt, kad mirus neleistu valdyt
+
 
 
 
@@ -37,7 +32,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
         Window mainWindow;
         Canvas layout;
         Text label;// Gyvybes
-        Text label2;// Score
+        Text label2;//Pabaigos Tekstas
+        Text label3;// Score
         Rectangle player;
 
         public struct PlayerStruct
@@ -64,8 +60,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
             public int gyvybes;
             public int gyvybiuSkaitiklis;
             public bool neAntZemes;
+            public bool mire;
           //  playerBottomPosition = playerTopPosition + playerHeight;
-           public PlayerStruct(int playerTopPos, int playerLeftPos, int playerH, int playerW, int jumpP, bool jmp, int pow, bool antPavirsiaus, int lives, int livesCount, bool neZeme, bool antLavos)
+           public PlayerStruct(int playerTopPos, int playerLeftPos, int playerH, int playerW, int jumpP, bool jmp, int pow, bool antPavirsiaus, int lives, int livesCount, bool neZeme, bool antLavos, bool die)
             {
                 playerTopPosition = playerTopPos;
                 
@@ -81,12 +78,13 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 gyvybiuSkaitiklis = livesCount;
                 neAntZemes = neZeme;
                 antLavosPavirsiaus = antLavos;
+                mire = die;
 
                 //playerBottomPosition = playerTopPosition + playerHeight;
                 //playerRightPosition = playerLeftPosition + playerWidth;
             }
         }
-        PlayerStruct playerStruct = new PlayerStruct(0,400,20,20,25,true,0,false,3,0,true,false);
+        PlayerStruct playerStruct = new PlayerStruct(0,400,20,20,25,true,0,false,3,0,true,false, false);
 
 
 
@@ -213,6 +211,19 @@ namespace VeIsNaujo_NuoSokinejantis_1
             layout.Children.Add(label);
             Canvas.SetLeft(label, 0);
             Canvas.SetTop(label, 0);
+         
+            
+            //Tekstas y asies reiksmiu tikrinimui
+            label2 = new Text();
+            label2.Height = 272;// buvo 240
+            label2.Width = 480;// buvo 320          
+            label2.ForeColor = Colors.White;
+            label2.Font = Resources.GetFont(Resources.FontResources.NinaB);
+
+            layout.Children.Add(label2);
+            Canvas.SetLeft(label2, 200);
+            Canvas.SetTop(label2, 132);
+
 
             //Spygliai
             for (int i = 0; i < spygliuMaxSk; i++)
@@ -341,9 +352,11 @@ namespace VeIsNaujo_NuoSokinejantis_1
                
 
             //Lava
-                Lava(ref playerStruct, ref spygliaiMap, ref lavaMap, buvusVirsaus, lavaId, ref player);
-            //   Canvas.SetTop(player, playerStruct.playerTopPosition); // update player top position
-                label.TextContent = "Gyvybes: " + playerStruct.gyvybes;
+            Lava(ref playerStruct, ref spygliaiMap, ref lavaMap, buvusVirsaus, lavaId, ref player);
+           
+            if (playerStruct.gyvybes < 1) playerStruct.mire = true;   
+            label.TextContent = "Gyvybes: " + playerStruct.gyvybes;
+            if (playerStruct.mire) label2.TextContent = "Zaidimas Baigtas!";
 
         }//jumpTimer end
       
