@@ -26,7 +26,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
          int heightRect;
       
         public Platform()
-        { 
+        {
         }
 
         public Platform(int Width, int Height)

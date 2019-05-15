@@ -21,6 +21,9 @@ namespace VeIsNaujo_NuoSokinejantis_1 {
         /// <summary>The Joystick module using socket 13 of the mainboard.</summary>
         private Gadgeteer.Modules.GHIElectronics.Joystick joystick;
         
+        /// <summary>The Tunes module using socket 18 of the mainboard.</summary>
+        private Gadgeteer.Modules.GHIElectronics.Tunes tunes;
+        
         /// <summary>This property provides access to the Mainboard API. This is normally not necessary for an end user program.</summary>
         protected new static GHIElectronics.Gadgeteer.FEZRaptor Mainboard {
             get {
@@ -45,6 +48,7 @@ namespace VeIsNaujo_NuoSokinejantis_1 {
         private void InitializeModules() {
             this.displayT43 = new GTM.GHIElectronics.DisplayT43(15, 16, 17, 14);
             this.joystick = new GTM.GHIElectronics.Joystick(13);
+            this.tunes = new GTM.GHIElectronics.Tunes(18);
         }
     }
 }

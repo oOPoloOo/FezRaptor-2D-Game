@@ -8,15 +8,18 @@ using Microsoft.SPOT.Presentation.Media;
 using Microsoft.SPOT.Presentation.Shapes;
 using Microsoft.SPOT.Touch;
 
+
 using Gadgeteer.Networking;
 using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
+
 //Pirmas lygis V7
-// Pradejau daryt, kad mirus ismestu uzrasa
-// Bet reikia, kad ji rodytu prieky, galbut butu didesnis
-//Taip pat padaryt, kad mirus neleistu valdyt
+//Padariau mirties ekrana. Kai esi mires negali nieko daryt
+//Padariau restartinima. Lygis einamas is naujo
+//Padariau, kad mirties uzrasas butu virs kitu objiektu - prideja ji po kitu objiektu pridejimo.
+//Pakeliau spyglius, kad ant ju nebutu galima uzsakt nuo zemes.
 
 
 
@@ -34,6 +37,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
         Text label;// Gyvybes
         Text label2;//Pabaigos Tekstas
         Text label3;// Score
+        
         Rectangle player;
 
         public struct PlayerStruct
@@ -84,7 +88,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 //playerRightPosition = playerLeftPosition + playerWidth;
             }
         }
-        PlayerStruct playerStruct = new PlayerStruct(0,400,20,20,25,true,0,false,3,0,true,false, false);
+        PlayerStruct playerStruct = new PlayerStruct(0,0,20,20,25,true,0,false,3,0,true,false, false);
 
 
 
@@ -161,6 +165,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
         int lavaWidth = 25;
         Platform[] lavaMap = new Platform[lavosMaxSk];
        
+        //Lyugio Restartinimas
+        bool restartinimas = false;
         
         void ProgramStarted()
         {
@@ -171,9 +177,11 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
             //joystickTimer.Tick += new GT.Timer.TickEventHandler(JoystickTimer_Tick);
             //joystickTimer.Start();
-            
-            jumpTimer.Tick += new GT.Timer.TickEventHandler(jumpTimer_Tick);
-            jumpTimer.Start();
+            if (!restartinimas)
+            {
+                jumpTimer.Tick += new GT.Timer.TickEventHandler(jumpTimer_Tick);
+                jumpTimer.Start();
+            }
 
             
 
@@ -182,48 +190,72 @@ namespace VeIsNaujo_NuoSokinejantis_1
         void SetupUI()
         {
             // initialize window
-            mainWindow = displayT43.WPFWindow;
+           
+            //Labai lagina  
+            //Startas(ref basePositionTop, basePositionLeft, platHeight, platWidth, spyglWidth, spyglHeigth, lavaWidth, lavaHeigth,  displayT43, ref layout, ref player, ref playerStruct, label, label2, label3, spyglKrist, pirmasKartas, spyglNukrito, platformMap, lavaMap, spygliaiMap, ref lavaId, ref spygliaiId, ref platformId, mainWindow);          
+           // this.tunes.Play();
+            // System.Media.SoundPlayer player = new System.Media.SoundPlayer(@"c:\mywavfile.wav");
+            //var soundPlayer = new SoundPlayer(@"c:\Windows\Media\chimes.wav");
+          
+          //  player.Play();
 
-            basePositionTop = (platHeight * (-12)) + displayT43.Height;
+           
 
             // setup the layout
-            layout = new Canvas();
-            Border background = new Border();
-            background.Background = new SolidColorBrush(Colors.Black);
-            background.Height = 272;
-            background.Width = 480;
+            if (!restartinimas)
+            {
+                mainWindow = displayT43.WPFWindow;
 
-            layout.Children.Add(background);
-            Canvas.SetLeft(background, 0);
-            Canvas.SetTop(background, 0);
+                basePositionTop = (platHeight * (-12)) + displayT43.Height;
+              
+                layout = new Canvas();
+                Border background = new Border();
+                background.Background = new SolidColorBrush(Colors.Black);
 
-            //add the player
-            player = new Rectangle(playerStruct.playerWidth, playerStruct.playerHeight);
-            player.Fill = new SolidColorBrush(Colors.Red);
-            layout.Children.Add(player);
+                background.Height = 272;
+                background.Width = 480;
 
-            //label
-            label = new Text();
-            label.Height = 272;// buvo 240
-            label.Width = 480;// buvo 320
-            label.ForeColor = Colors.White;
-            label.Font = Resources.GetFont(Resources.FontResources.NinaB);
-            layout.Children.Add(label);
-            Canvas.SetLeft(label, 0);
-            Canvas.SetTop(label, 0);
-         
-            
-            //Tekstas y asies reiksmiu tikrinimui
-            label2 = new Text();
-            label2.Height = 272;// buvo 240
-            label2.Width = 480;// buvo 320          
-            label2.ForeColor = Colors.White;
-            label2.Font = Resources.GetFont(Resources.FontResources.NinaB);
+                layout.Children.Add(background);
+                Canvas.SetLeft(background, 0);
+                Canvas.SetTop(background, 0);
 
-            layout.Children.Add(label2);
-            Canvas.SetLeft(label2, 200);
-            Canvas.SetTop(label2, 132);
+                //add the player
+                player = new Rectangle(playerStruct.playerWidth, playerStruct.playerHeight);
+                player.Fill = new SolidColorBrush(Colors.Red);
+                layout.Children.Add(player);
 
+                //label
+                label = new Text();
+                label.Height = 272;// buvo 240
+                label.Width = 480;// buvo 320
+                label.ForeColor = Colors.White;
+                label.Font = Resources.GetFont(Resources.FontResources.NinaB);
+                layout.Children.Add(label);
+                Canvas.SetLeft(label, 0);
+                Canvas.SetTop(label, 0);
+            }
+
+            ////Tekstas mirties uzrasui
+            //label2 = new Text();
+            //label2.Height = 272;// buvo 240
+            //label2.Width = 480;// buvo 320          
+            //label2.ForeColor = Colors.White;
+            //label2.Font = Resources.GetFont(Resources.FontResources.NinaB);
+
+            //layout.Children.Add(label2);
+            //Canvas.SetLeft(label2, 180);
+            //Canvas.SetTop(label2, 132);
+
+            ////Tekstas mirties uzrasui
+            //label3 = new Text();
+            //label3.Height = 272;// buvo 240
+            //label3.Width = 480;// buvo 320          
+            //label3.ForeColor = Colors.White;
+            //label3.Font = Resources.GetFont(Resources.FontResources.NinaB);
+
+            //layout.Children.Add(label3);
+            //Canvas.SetLeft(label3, 110);
+            //Canvas.SetTop(label3, 132 + label2.Font.Height);
 
             //Spygliai
             for (int i = 0; i < spygliuMaxSk; i++)
@@ -257,16 +289,16 @@ namespace VeIsNaujo_NuoSokinejantis_1
             map[0] = ".....................................";
             map[1] = ".....................................";
             map[2] = ".....................................";
-            map[3] = ".....................................";
-            map[4] = ".................#...................";
-            map[5] = "...........S...###...................";
-            map[6] = ".#...S...S...S.......................";
-            map[7] = ".......S.............................";
+            map[3] = ".................#...................";
+            map[4] = "...........S...###...................";
+            map[5] = ".....S...S...S.......................";
+            map[6] = ".#.....S.............................";
+            map[7] = ".....................................";
             map[8] = ".....................................";
             map[9] = ".....................................";
             map[10] = "...#................................";
             map[11] = "####LLLLLLLLL#......................";
-           
+
 
 
             for (int i = 0; i < map.Length; i++)
@@ -276,10 +308,10 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     if (map[i][j] == '#')
                     {
                         platformMap[platformId] = new Platform(platWidth, platHeight);
-                        platformMap[platformId].set(basePositionLeft + j * platWidth , basePositionTop + i * platHeight);
+                        platformMap[platformId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
                         platformId++;
                     }
-                 
+
                     if (map[i][j] == 'S')
                     {
                         spygliaiMap[spygliaiId] = new Platform(spyglWidth, spyglHeigth);
@@ -303,7 +335,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
             // Adding platforms to screen
             for (int i = 0; i < platformId; i++)
-            {               
+            {
                 layout.Children.Add(platformMap[i].get());
             }
 
@@ -317,6 +349,32 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 layout.Children.Add(lavaMap[i].get());
             }
 
+            if (!restartinimas)
+            {
+                //Perkeliau po visu kompunentu idejimo, kad mirties tekstas butu ant virsasu
+                //Tekstas mirties uzrasui
+                label2 = new Text();
+                label2.Height = 272;// buvo 240
+                label2.Width = 480;// buvo 320          
+                label2.ForeColor = Colors.White;
+                label2.Font = Resources.GetFont(Resources.FontResources.NinaB);
+
+                layout.Children.Add(label2);
+                Canvas.SetLeft(label2, 180);
+                Canvas.SetTop(label2, 132);
+
+                //Tekstas mirties uzrasui
+                label3 = new Text();
+                label3.Height = 272;// buvo 240
+                label3.Width = 480;// buvo 320          
+                label3.ForeColor = Colors.White;
+                label3.Font = Resources.GetFont(Resources.FontResources.NinaB);
+
+                layout.Children.Add(label3);
+                Canvas.SetLeft(label3, 110);
+                Canvas.SetTop(label3, 132 + label2.Font.Height);
+            }
+           
             mainWindow.Child = layout;
         }
 
@@ -327,13 +385,13 @@ namespace VeIsNaujo_NuoSokinejantis_1
            //-------------------------------------------------------------------------------------------------------
            // PLATFORMOS KOLIZIJA IR JUDEJIMAS
            //------------------------------------------------------------------------------------------------------
-            JudejimasY(ref  buvusVirsaus, ref  playerStruct,  joystick);// Sutvarkyta
+           if (!playerStruct.mire) JudejimasY(ref  buvusVirsaus, ref  playerStruct,  joystick);// Sutvarkyta
 
             Canvas.SetTop(player, playerStruct.playerTopPosition);
             
             VirsausKolizija(platformId,  platformMap,  buvusVirsaus, ref playerStruct, displayT43);//Pataisyta
 
-            JudejimasX(ref buvusKaires,  stopLeft, stopRight, ref playerStruct, joystick,  displayT43);// Pataisyta
+            if (!playerStruct.mire) JudejimasX(ref buvusKaires, stopLeft, stopRight, ref playerStruct, joystick, displayT43);// Pataisyta
 
             Canvas.SetLeft(player, playerStruct.playerLeftPosition);// update player left posti
 
@@ -354,9 +412,57 @@ namespace VeIsNaujo_NuoSokinejantis_1
             //Lava
             Lava(ref playerStruct, ref spygliaiMap, ref lavaMap, buvusVirsaus, lavaId, ref player);
            
-            if (playerStruct.gyvybes < 1) playerStruct.mire = true;   
-            label.TextContent = "Gyvybes: " + playerStruct.gyvybes;
-            if (playerStruct.mire) label2.TextContent = "Zaidimas Baigtas!";
+            
+            if (!playerStruct.mire) label.TextContent = "Gyvybes: " + playerStruct.gyvybes;
+            if (playerStruct.gyvybes < 1) playerStruct.mire = true;
+            if (playerStruct.mire)
+            {
+                label2.TextContent = "Zaidimas Baigtas!";
+                label3.TextContent = "Paspauskite valdikli, kad kartotumete";
+            }
+            if (!playerStruct.mire)
+            {
+                label2.TextContent = "";
+                label3.TextContent = "";
+            }
+            if (playerStruct.mire && joystick.IsPressed)
+            {
+               
+                // nieko nedaro
+                //ProgramStarted();
+                //SetupUI();
+                // base.Run();
+                // Application.Current.Run();
+                playerStruct.playerTopPosition = 240;
+                playerStruct.playerLeftPosition = 0;
+                playerStruct.gyvybes = 3;
+                playerStruct.mire = false;
+             
+                
+                //mainWindow.Child = null;
+                //mainWindow = null;
+               
+                //layout.Children.Remove(label);
+                //layout.Children.Remove(label2); //Blogai nes 2tra kart mirus neismeta teksto
+                //layout.Children.Remove(label3);
+
+                for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
+                for (int i = 0; i < lavaId; i++) layout.Children.Remove(lavaMap[i].get());
+                for (int i = 0; i < spygliaiId; i++) layout.Children.Remove(spygliaiMap[i].get());
+             
+                lavaId = 0;
+                platformId = 0;
+                spygliaiId = 0;
+                restartinimas = true;
+      
+                ProgramStarted();
+
+                //label2.TextContent = "";
+                //label3.TextContent = "";
+                
+                //SetupUI(); sito ne tik nevykdo, bet ji idejus neveikia visas if
+            }
+
 
         }//jumpTimer end
       
@@ -556,7 +662,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
         static void SpyglioKritimas(ref PlayerStruct Zaidejas, ref Platform[] spygl, ref Platform[] platformMap, bool[] krist, bool[] pirmasKartas, bool[] spyglNukrito, int buvusZaidejoTop, int index, ref Platform[] lavaMap, Gadgeteer.Modules.GHIElectronics.DisplayT43 displayT43, int platId, int lavaId)
         {
             int buvusVirsaus = spygl[index].posTop();// priskyrt buvusiai spyglio top possision
-
+            
 
             if (spygl[index].isVisible())
             {
@@ -704,8 +810,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     if (buvoVirsui && spygl[index].posBottom() >= Zaidejas.playerTopPosition)
                     {
                         Zaidejas.gyvybes--;
-
-
+                  //      tunes.Play(500,200);
+                        //.Play(200);
+                        //.Stop();
                         // Form EkranasMetVid = new Form();// veikia taip pat kaip ir paduoti parametrai
                         //  spygl[index].Visible = false;
                         spygl[index].Hide();
@@ -733,7 +840,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
         }// SpyglioKritimas end
 
         //-------------------------------------------------------------------------------------------------------------
-        static void Lava(ref PlayerStruct Zaidejas, ref Platform[] spygl, ref Platform[] lavaMap,int zaidejoBuvusTop, int lavaId, ref Rectangle player)
+        static void Lava(ref PlayerStruct Zaidejas, ref Platform[] spygl, ref Platform[] lavaMap, int zaidejoBuvusTop, int lavaId, ref Rectangle player)
         {
 
             bool buvoVirsui;
@@ -781,6 +888,177 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 }
                 else Zaidejas.antLavosPavirsiaus = false;
             }
+        }// Lava end
+        //---------------------------------------------------------------------------------------------------
+        static void Startas(ref int basePositionTop, int basePositionLeft, int platHeight, int platWidth, int spyglWidth, int spyglHeigth, int lavaWidth, int lavaHeigth, Gadgeteer.Modules.GHIElectronics.DisplayT43 displayT43, ref Canvas layout, ref Rectangle player, ref PlayerStruct playerStruct, Text label, Text label2, Text label3, bool[] spyglKrist, bool[] pirmasKartas,  bool[] spyglNukrito, Platform[] platformMap, Platform[] lavaMap, Platform[] spygliaiMap, ref int lavaId, ref int spygliaiId, ref int platformId,  Window mainWindow)
+        {
+            basePositionTop = (platHeight * (-12)) + displayT43.Height;
+
+            // setup the layout
+            layout = new Canvas();
+            Border background = new Border();
+            background.Background = new SolidColorBrush(Colors.Black);
+            background.Height = 272;
+            background.Width = 480;
+
+            layout.Children.Add(background);
+            Canvas.SetLeft(background, 0);
+            Canvas.SetTop(background, 0);
+
+            //add the player
+            player = new Rectangle(playerStruct.playerWidth, playerStruct.playerHeight);
+            player.Fill = new SolidColorBrush(Colors.Red);
+            layout.Children.Add(player);
+
+            //label
+            label = new Text();
+            label.Height = 272;// buvo 240
+            label.Width = 480;// buvo 320
+            label.ForeColor = Colors.White;
+            label.Font = Resources.GetFont(Resources.FontResources.NinaB);
+            layout.Children.Add(label);
+            Canvas.SetLeft(label, 0);
+            Canvas.SetTop(label, 0);
+
+
+            ////Tekstas mirties uzrasui
+            //label2 = new Text();
+            //label2.Height = 272;// buvo 240
+            //label2.Width = 480;// buvo 320          
+            //label2.ForeColor = Colors.White;
+            //label2.Font = Resources.GetFont(Resources.FontResources.NinaB);
+
+            //layout.Children.Add(label2);
+            //Canvas.SetLeft(label2, 180);
+            //Canvas.SetTop(label2, 132);
+
+            ////Tekstas mirties uzrasui
+            //label3 = new Text();
+            //label3.Height = 272;// buvo 240
+            //label3.Width = 480;// buvo 320          
+            //label3.ForeColor = Colors.White;
+            //label3.Font = Resources.GetFont(Resources.FontResources.NinaB);
+
+            //layout.Children.Add(label3);
+            //Canvas.SetLeft(label3, 110);
+            //Canvas.SetTop(label3, 132 + label2.Font.Height);
+
+            //Spygliai
+            for (int i = 0; i < spygliuMaxSk; i++)
+            {
+                spyglKrist[i] = false;
+                pirmasKartas[i] = true;
+                spyglNukrito[i] = false;
+
+            }
+
+
+
+            // Platformer map
+            //Sunki versija
+            //string[] map = new string[12];
+            //map[0] = ".....................................";
+            //map[1] = ".....................................";
+            //map[2] = ".....................................";
+            //map[3] = ".....................................";
+            //map[4] = ".................#...................";
+            //map[5] = "...........S...###...................";
+            //map[6] = ".#...S...S...S.......................";
+            //map[7] = "........S............................";
+            //map[8] = ".....................................";
+            //map[9] = ".....................................";
+            //map[10] = "...#................................";
+            //map[11] = "####LLLLLLLLL#......................";
+
+            //Lengva versija
+            string[] map = new string[12];
+            map[0] = ".....................................";
+            map[1] = ".....................................";
+            map[2] = ".....................................";
+            map[3] = ".................#...................";
+            map[4] = "...........S...###...................";
+            map[5] = ".....S...S...S.......................";
+            map[6] = ".#.....S.............................";
+            map[7] = ".....................................";
+            map[8] = ".....................................";
+            map[9] = ".....................................";
+            map[10] = "...#................................";
+            map[11] = "####LLLLLLLLL#......................";
+
+
+
+            for (int i = 0; i < map.Length; i++)
+            {
+                for (int j = 0; j < map[i].Length; j++)
+                {
+                    if (map[i][j] == '#')
+                    {
+                        platformMap[platformId] = new Platform(platWidth, platHeight);
+                        platformMap[platformId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
+                        platformId++;
+                    }
+
+                    if (map[i][j] == 'S')
+                    {
+                        spygliaiMap[spygliaiId] = new Platform(spyglWidth, spyglHeigth);
+                        spygliaiMap[spygliaiId].paintBlue();
+                        // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
+                        spygliaiMap[spygliaiId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
+                        spygliaiId++;
+                    }
+                    if (map[i][j] == 'L')
+                    {
+                        lavaMap[lavaId] = new Platform(lavaWidth, lavaHeigth);
+                        lavaMap[lavaId].paintMagenta();
+                        // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
+                        lavaMap[lavaId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
+                        lavaId++;
+                    }
+                }
+            }
+
+
+
+            // Adding platforms to screen
+            for (int i = 0; i < platformId; i++)
+            {
+                layout.Children.Add(platformMap[i].get());
+            }
+
+            for (int i = 0; i < spygliaiId; i++)
+            {
+                layout.Children.Add(spygliaiMap[i].get());
+            }
+
+            for (int i = 0; i < lavaId; i++)
+            {
+                layout.Children.Add(lavaMap[i].get());
+            }
+
+            //Perkeliau po visu kompunentu idejimo, kad mirties tekstas butu ant virsasu
+            //Tekstas mirties uzrasui
+            label2 = new Text();
+            label2.Height = 272;// buvo 240
+            label2.Width = 480;// buvo 320          
+            label2.ForeColor = Colors.White;
+            label2.Font = Resources.GetFont(Resources.FontResources.NinaB);
+
+            layout.Children.Add(label2);
+            Canvas.SetLeft(label2, 180);
+            Canvas.SetTop(label2, 132);
+
+            //Tekstas mirties uzrasui
+            label3 = new Text();
+            label3.Height = 272;// buvo 240
+            label3.Width = 480;// buvo 320          
+            label3.ForeColor = Colors.White;
+            label3.Font = Resources.GetFont(Resources.FontResources.NinaB);
+
+            layout.Children.Add(label3);
+            Canvas.SetLeft(label3, 110);
+            Canvas.SetTop(label3, 132 + label2.Font.Height);
+
+            mainWindow.Child = layout;
         }
     }
 }

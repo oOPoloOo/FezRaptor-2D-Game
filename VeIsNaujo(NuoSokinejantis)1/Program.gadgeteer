@@ -67,7 +67,7 @@
           <moduleHasSocketUses Id="ff246c3a-deef-46d0-8e3c-83d2680611cb">
             <socketUse Id="eb6acc58-b119-43fa-bc14-d77599aec169" label="R">
               <socket>
-                <socketUseReferencesSocket Id="40b39000-4f96-4e4c-a477-1a32ab1bb45b">
+                <socketUseReferencesSocket Id="f54f3697-5d15-4f10-b9f7-b97924dcc2ca">
                   <socketMoniker Id="709e6a85-bb1d-4379-b4f0-a376ef50798b" />
                 </socketUseReferencesSocket>
               </socket>
@@ -76,7 +76,7 @@
           <moduleHasSocketUses Id="143fba3d-74fe-4e5e-8d56-bf3aad3fb136">
             <socketUse Id="404927df-4e80-4edb-b8df-51ff043d1b65" label="G">
               <socket>
-                <socketUseReferencesSocket Id="3a5fe875-9266-4be1-aef2-3f1e0b8c0a8a">
+                <socketUseReferencesSocket Id="7d97756c-710d-4162-91c0-708fe04bec79">
                   <socketMoniker Id="8fabc3e5-ba47-4c9c-b5bb-1718389112c0" />
                 </socketUseReferencesSocket>
               </socket>
@@ -85,7 +85,7 @@
           <moduleHasSocketUses Id="6ee0d76e-9ced-41ff-a210-3f8ac95ae201">
             <socketUse Id="60725691-5f65-4c24-ae03-6fe0f44a06ef" label="B">
               <socket>
-                <socketUseReferencesSocket Id="9a4b984a-6d23-465f-99d6-119174c617c0">
+                <socketUseReferencesSocket Id="e0ff94ed-e5bd-4f51-82ec-14056f88c019">
                   <socketMoniker Id="c05ca5df-ad92-4f12-bbe6-e84468090fa9" />
                 </socketUseReferencesSocket>
               </socket>
@@ -94,7 +94,7 @@
           <moduleHasSocketUses Id="f86ecfba-338c-4e8c-b71f-265758c7cf51">
             <socketUse Id="0417a487-8fab-4d91-b193-33e9d8ef7dcf" label="T">
               <socket>
-                <socketUseReferencesSocket Id="12abb9dd-1428-4105-90d6-86e05bcbafc2">
+                <socketUseReferencesSocket Id="0ce36727-8581-4184-8b17-683b16dcbf87">
                   <socketMoniker Id="31878ace-9685-451b-880c-dcfbf93aeca6" />
                 </socketUseReferencesSocket>
               </socket>
@@ -109,8 +109,23 @@
           <moduleHasSocketUses Id="defc6edf-b094-4a2c-83ad-90d96fb8f539">
             <socketUse Id="b2a39963-0b7f-47b7-94d2-9fdc28648254" label="A">
               <socket>
-                <socketUseReferencesSocket Id="c0b493d6-c4dd-407f-9ee9-11a50424624c">
+                <socketUseReferencesSocket Id="bf358e96-8e94-4d19-a252-d569c81f1bba">
                   <socketMoniker Id="d47356e0-3d80-4117-aca8-d989736446fa" />
+                </socketUseReferencesSocket>
+              </socket>
+            </socketUse>
+          </moduleHasSocketUses>
+        </socketUses>
+      </module>
+    </gadgeteerModelHasGadgeteerHardware>
+    <gadgeteerModelHasGadgeteerHardware Id="479f99ca-8cc2-4261-99b0-beffc86bad1a">
+      <module Id="b8361e7d-ff24-4357-9301-a3ace0cd400d" cachedDefinition="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&#xD;&#xA;&lt;ModuleDefinition xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; Name=&quot;Tunes&quot; Manufacturer=&quot;GHI Electronics&quot; Description=&quot;A Tunes module&quot; Type=&quot;Gadgeteer.Modules.GHIElectronics.Tunes&quot; HardwareVersion=&quot;1.0&quot; Image=&quot;C:\Program Files (x86)\GHI Electronics\.NET Gadgeteer SDK\Modules\Tunes\Image.jpg&quot; BoardWidth=&quot;32&quot; BoardHeight=&quot;22&quot; MinimumGadgeteerCoreVersion=&quot;2.43.800&quot; HelpUrl=&quot;http://www.ghielectronics.com/catalog/product/434&quot; UniqueId=&quot;eb388a33-bde1-47c2-b0a4-2ad7b22faab7&quot; InstanceName=&quot;tunes&quot; ModuleSuppliesPower=&quot;false&quot;&gt;&#xD;&#xA;  &lt;Power&gt;&#xD;&#xA;    &lt;PowerRequirements Voltage=&quot;3.3&quot;&gt;&#xD;&#xA;      &lt;TypicalCurrent&gt;0.015&lt;/TypicalCurrent&gt;&#xD;&#xA;      &lt;MaximumCurrent&gt;0.03&lt;/MaximumCurrent&gt;&#xD;&#xA;    &lt;/PowerRequirements&gt;&#xD;&#xA;    &lt;PowerRequirements Voltage=&quot;5&quot;&gt;&#xD;&#xA;      &lt;TypicalCurrent&gt;0&lt;/TypicalCurrent&gt;&#xD;&#xA;      &lt;MaximumCurrent&gt;0&lt;/MaximumCurrent&gt;&#xD;&#xA;    &lt;/PowerRequirements&gt;&#xD;&#xA;  &lt;/Power&gt;&#xD;&#xA;  &lt;ProvidedSockets /&gt;&#xD;&#xA;  &lt;Assemblies&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.2&quot; Name=&quot;GTM.GHIElectronics.Tunes&quot; /&gt;&#xD;&#xA;    &lt;Assembly MFVersion=&quot;4.3&quot; Name=&quot;GTM.GHIElectronics.Tunes&quot; /&gt;&#xD;&#xA;  &lt;/Assemblies&gt;&#xD;&#xA;  &lt;LibrariesProvided /&gt;&#xD;&#xA;  &lt;Sockets&gt;&#xD;&#xA;    &lt;Socket Orientation=&quot;90&quot; Left=&quot;14.5&quot; Top=&quot;18&quot; TypesLabel=&quot;P&quot; ConstructorOrder=&quot;1&quot; Optional=&quot;false&quot;&gt;&#xD;&#xA;      &lt;Types&gt;&#xD;&#xA;        &lt;Type&gt;P&lt;/Type&gt;&#xD;&#xA;      &lt;/Types&gt;&#xD;&#xA;      &lt;Pins&gt;&#xD;&#xA;        &lt;Pin Shared=&quot;false&quot;&gt;9&lt;/Pin&gt;&#xD;&#xA;      &lt;/Pins&gt;&#xD;&#xA;    &lt;/Socket&gt;&#xD;&#xA;  &lt;/Sockets&gt;&#xD;&#xA;  &lt;ExtraLibrariesRequired /&gt;&#xD;&#xA;&lt;/ModuleDefinition&gt;" name="tunes" moduleType="Gadgeteer.Modules.GHIElectronics.Tunes" moduleDefinitionId="eb388a33-bde1-47c2-b0a4-2ad7b22faab7">
+        <socketUses>
+          <moduleHasSocketUses Id="2a4c14d5-c8b2-4484-aa74-496392c3006e">
+            <socketUse Id="102148c8-544e-4e0f-93f1-865a8a68c5ca" label="P">
+              <socket>
+                <socketUseReferencesSocket Id="89b1c597-9b0a-46d5-9f8a-22d2d7cb3025">
+                  <socketMoniker Id="bd13762c-3a10-4d23-a681-e8cb9361bfce" />
                 </socketUseReferencesSocket>
               </socket>
             </socketUse>

@@ -64,6 +64,9 @@
     <Reference Include="GTM.GHIElectronics.Joystick, Version=4.3.8.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="GTM.GHIElectronics.Tunes, Version=4.3.8.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="Microsoft.SPOT.Graphics" />
     <Reference Include="Microsoft.SPOT.Hardware" />
     <Reference Include="Microsoft.SPOT.Native" />
@@ -92,5 +95,8 @@
     </None>
     <None Include="Resources\NinaB.tinyfnt" />
     <None Include="Resources\small.tinyfnt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Pat-SoundBible.com-1661659465.wav" />
   </ItemGroup>
 </Project>
