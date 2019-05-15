@@ -75,14 +75,14 @@ namespace VeIsNaujo_NuoSokinejantis_1
             return widthRect;
         }
 
-        public void paintBlue()
+        public void paint(Color spalva)
         {
-            platformRectangle.Fill = new SolidColorBrush(Colors.Blue);
+            platformRectangle.Fill = new SolidColorBrush(spalva);
         }
-        public void paintMagenta()
-        {
-            platformRectangle.Fill = new SolidColorBrush(Colors.Magenta);
-        }
+        //public void paintMagenta()
+        //{
+        //    platformRectangle.Fill = new SolidColorBrush(Colors.Magenta);
+        //}
         public bool isVisible()
         {
             return platformRectangle.IsVisible;
