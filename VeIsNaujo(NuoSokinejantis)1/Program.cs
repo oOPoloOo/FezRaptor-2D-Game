@@ -21,7 +21,6 @@ using Gadgeteer.Modules.GHIElectronics;
 //Suvarkiau, kad po mirties ant lavos dar speja pasokt
 //Lavos metode, po gyvybiu minusavimo pridejau //Is ansciau daryt, kad mirgsetu ant lavos
 //Sutvarkiau taskus, kad laiko taskai negaletu but neigiami
-//neveikia restart - nezinau kodel
 
 
 
@@ -96,7 +95,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 //playerRightPosition = playerLeftPosition + playerWidth;
             }
         }
-        PlayerStruct playerStruct = new PlayerStruct(0, 0, 20, 20, 25, true, 0, false, 7, 0, true, false, false, false);
+        PlayerStruct playerStruct = new PlayerStruct(0, 0, 20, 20, 25, true, 0, false, 6, 0, true, false, false, false);
 
 
 
@@ -310,7 +309,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 spyglNukrito[i] = false;
 
             }
-            ledStrip.SetLeds(7);
+
 
 
             // Platformer map
@@ -467,9 +466,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
         }
 
         void jumpTimer_Tick(GT.Timer timer)
-        { 
-                          ledStrip.SetLed(7 - playerStruct.gyvybes, false);
-       
+        {
 
             //-------------------------------------------------------------------------------------------------------
             // PLATFORMOS KOLIZIJA IR JUDEJIMAS
@@ -538,7 +535,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 {
                     playerStruct.playerTopPosition = 240;
                     playerStruct.playerLeftPosition = 0;
-                    playerStruct.gyvybes = 7;
+                    playerStruct.gyvybes = 6;
                     laikoTaskai = duotaLaiko;
                     snaigiuTaskai = 0;
                     playerStruct.laimejo = false;
@@ -567,7 +564,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 // Application.Current.Run();
                 playerStruct.playerTopPosition = 240;
                 playerStruct.playerLeftPosition = 0;
-                playerStruct.gyvybes = 7;
+                playerStruct.gyvybes = 6;
                 snaigiuTaskai = 0;
                 laikoTaskai = duotaLaiko;
                 playerStruct.mire = false;
@@ -1024,7 +1021,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         {
                             Zaidejas.gyvybes--;
                             Zaidejas.gyvybiuSkaitiklis = 0;
-                            if (Zaidejas.gyvybes > 0) label.TextContent = "Gyvybes: " + Zaidejas.gyvybes;
+                            if (!Zaidejas.mire) label.TextContent = "Gyvybes: " + Zaidejas.gyvybes;
                             if (Zaidejas.gyvybes < 1) Zaidejas.mire = true;
                         }
                         Zaidejas.gyvybiuSkaitiklis++;
