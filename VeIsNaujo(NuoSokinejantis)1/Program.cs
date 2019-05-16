@@ -15,8 +15,11 @@ using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
 
-//Pirmas lygis V8
+//Pirmas lygis V9
 //Pradejau daryt, kad mirgsetu ant lavos
+//Veikiancios dyrys
+//Pabandziau sutvarkyt mirties teksta, kad visas butu ant virsasu
+//Kiekviena karta ji istrindams ir vel sukurdamas paskutini - ne taaip lengva kaip atrodo, nes jo isvis nemeta. Atidedu
 
 
 
@@ -33,7 +36,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
         Canvas layout;
         Text label;// Gyvybes
         Text label2;//Pabaigos Tekstas
-        Text label3;// Score
+        Text label3;// Restart Tekstas
+        Text label4;// Pergales Tekstas
         
         Rectangle player;
 
@@ -62,8 +66,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
             public int gyvybiuSkaitiklis;
             public bool neAntZemes;
             public bool mire;
+            public bool laimejo;
           //  playerBottomPosition = playerTopPosition + playerHeight;
-           public PlayerStruct(int playerTopPos, int playerLeftPos, int playerH, int playerW, int jumpP, bool jmp, int pow, bool antPavirsiaus, int lives, int livesCount, bool neZeme, bool antLavos, bool die)
+           public PlayerStruct(int playerTopPos, int playerLeftPos, int playerH, int playerW, int jumpP, bool jmp, int pow, bool antPavirsiaus, int lives, int livesCount, bool neZeme, bool antLavos, bool die, bool win)
             {
                 playerTopPosition = playerTopPos;
                 
@@ -80,12 +85,13 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 neAntZemes = neZeme;
                 antLavosPavirsiaus = antLavos;
                 mire = die;
+                laimejo = win;
 
                 //playerBottomPosition = playerTopPosition + playerHeight;
                 //playerRightPosition = playerLeftPosition + playerWidth;
             }
         }
-        PlayerStruct playerStruct = new PlayerStruct(0,0,20,20,25,true,0,false,300,0,true,false, false);
+        PlayerStruct playerStruct = new PlayerStruct(0,0,20,20,25,true,0,false,6,0,true,false, false, false);
 
 
 
@@ -164,6 +170,13 @@ namespace VeIsNaujo_NuoSokinejantis_1
        
         //Lyugio Restartinimas
         bool restartinimas = false;
+
+        //Durys i pergale
+        static int duruMaxSk = 10;
+        int duruId = 0;
+        int duruHeigth = 35;
+        int duruWidth = 25;
+        Platform[] durysMap = new Platform[duruMaxSk];
         
         void ProgramStarted()
         {
@@ -294,7 +307,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             map[8] = ".....................................";
             map[9] = ".....................................";
             map[10] = "...#................................";
-            map[11] = "####LLLLLLLLL#......................";
+            map[11] = "####LLLLLLLLL#....D.................";
 
 
 
@@ -325,6 +338,14 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         lavaMap[lavaId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
                         lavaId++;
                     }
+                    if (map[i][j] == 'D')
+                    {
+                        durysMap[duruId] = new Platform(duruWidth, duruHeigth);
+                        durysMap[duruId].paint(Colors.Green);
+                        // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
+                        durysMap[duruId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
+                        duruId++;
+                    }
                 }
             }
 
@@ -345,6 +366,10 @@ namespace VeIsNaujo_NuoSokinejantis_1
             {
                 layout.Children.Add(lavaMap[i].get());
             }
+            for (int i = 0; i < duruId; i++)
+            {
+                layout.Children.Add(durysMap[i].get());
+            }
 
             if (!restartinimas)
             {
@@ -360,7 +385,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 Canvas.SetLeft(label2, 180);
                 Canvas.SetTop(label2, 132);
 
-                //Tekstas mirties uzrasui
+                //Tekstas restartinimo uzrasui
                 label3 = new Text();
                 label3.Height = 272;// buvo 240
                 label3.Width = 480;// buvo 320          
@@ -368,8 +393,19 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 label3.Font = Resources.GetFont(Resources.FontResources.NinaB);
 
                 layout.Children.Add(label3);
-                Canvas.SetLeft(label3, 110);
+                Canvas.SetLeft(label3, 115);
                 Canvas.SetTop(label3, 132 + label2.Font.Height);
+                
+                //Pergales tekstas
+                label4 = new Text();
+                label4.Height = 272;// buvo 240
+                label4.Width = 480;// buvo 320          
+                label4.ForeColor = Colors.White;
+                label4.Font = Resources.GetFont(Resources.FontResources.NinaB);
+
+                layout.Children.Add(label4);
+                Canvas.SetLeft(label4, 180);//Tokiam paciam auksti, kaip ir mirties
+                Canvas.SetTop(label4, 132);
             }
            
             mainWindow.Child = layout;
@@ -384,13 +420,13 @@ namespace VeIsNaujo_NuoSokinejantis_1
            //------------------------------------------------------------------------------------------------------
             //player.Fill = new SolidColorBrush(Colors.Red); //Pakeiciu zaidejo spauva is juodos i raudona - mirgsejimas
          
-            if (!playerStruct.mire) JudejimasY(ref  buvusVirsaus, ref  playerStruct,  joystick);// Sutvarkyta
+            if (!playerStruct.mire && !playerStruct.laimejo) JudejimasY(ref  buvusVirsaus, ref  playerStruct,  joystick);// Sutvarkyta
 
             Canvas.SetTop(player, playerStruct.playerTopPosition);
             
             VirsausKolizija(platformId,  platformMap,  buvusVirsaus, ref playerStruct, displayT43);//Pataisyta
 
-            if (!playerStruct.mire) JudejimasX(ref buvusKaires, stopLeft, stopRight, ref playerStruct, joystick, displayT43);// Pataisyta
+            if (!playerStruct.mire && !playerStruct.laimejo) JudejimasX(ref buvusKaires, stopLeft, stopRight, ref playerStruct, joystick, displayT43);// Pataisyta
 
             Canvas.SetLeft(player, playerStruct.playerLeftPosition);// update player left posti
 
@@ -410,21 +446,51 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
             //Lava
             Lava(ref playerStruct, ref spygliaiMap, ref lavaMap, buvusVirsaus, lavaId, ref player);
+
+            //Durys
+            Durys();
            
             
             if (!playerStruct.mire) label.TextContent = "Gyvybes: " + playerStruct.gyvybes;
             if (playerStruct.gyvybes < 1) playerStruct.mire = true;
-            if (playerStruct.mire)
+            if (playerStruct.mire && !playerStruct.laimejo)
             {
                 label2.TextContent = "Zaidimas Baigtas!";
                 label3.TextContent = "Paspauskite valdikli, kad kartotumete";
             }
-            if (!playerStruct.mire)
+            if (!playerStruct.mire  && !playerStruct.laimejo)
             {
                 label2.TextContent = "";
                 label3.TextContent = "";
+                label4.TextContent = "";
             }
-            if (playerStruct.mire && joystick.IsPressed)
+            if (playerStruct.laimejo && !playerStruct.mire)
+            {
+                label4.TextContent = "Jus perejote lygi!!!";
+                label3.TextContent = "Paspauskite valdikli, kad kartotumete";
+
+                if(joystick.IsPressed)
+                {
+                    playerStruct.playerTopPosition = 240;
+                    playerStruct.playerLeftPosition = 0;
+                    playerStruct.gyvybes = 6;                   
+                    playerStruct.laimejo = false;
+
+                    for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
+                    for (int i = 0; i < lavaId; i++) layout.Children.Remove(lavaMap[i].get());
+                    for (int i = 0; i < spygliaiId; i++) layout.Children.Remove(spygliaiMap[i].get());
+
+                    lavaId = 0;
+                    platformId = 0;
+                    spygliaiId = 0;
+                    restartinimas = true;
+                    player.Fill = new SolidColorBrush(Colors.Red);
+                  
+                    ProgramStarted();
+
+                }
+            }
+            if (playerStruct.mire && joystick.IsPressed && !playerStruct.laimejo)
             {
                
                 // nieko nedaro
@@ -434,16 +500,15 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 // Application.Current.Run();
                 playerStruct.playerTopPosition = 240;
                 playerStruct.playerLeftPosition = 0;
-                playerStruct.gyvybes = 3;
+                playerStruct.gyvybes = 6;
                 playerStruct.mire = false;
              
                 
                 //mainWindow.Child = null;
                 //mainWindow = null;
-               
-                //layout.Children.Remove(label);
-                //layout.Children.Remove(label2); //Blogai nes 2tra kart mirus neismeta teksto
-                //layout.Children.Remove(label3);
+
+                //layout.Children.Remove(label);//Sitam nereikia, nes niekas neuzstoja
+              
 
                 for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
                 for (int i = 0; i < lavaId; i++) layout.Children.Remove(lavaMap[i].get());
@@ -453,6 +518,12 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 platformId = 0;
                 spygliaiId = 0;
                 restartinimas = true;
+
+                //if (restartinimas)// Su remive neiseina
+                //{
+                //    layout.Children.Remove(label2);// Kiekviena kart kuriu naujus, kad butu ant virsasu
+                //    layout.Children.Remove(label3);
+                //}
       
                 ProgramStarted();
 
@@ -895,6 +966,87 @@ namespace VeIsNaujo_NuoSokinejantis_1
             }
         }// Lava end
         //---------------------------------------------------------------------------------------------------
-       
+        void Durys()
+        {
+            bool buvoKairej = false;
+            bool buvoDesinej = false;
+
+            for (int i = 0; i < duruId; i++)
+            {
+                // the very bottom collision
+                if (durysMap[i].posBottom() >= displayT43.Height)
+                {
+                    durysMap[i].set(durysMap[i].posLeft(), displayT43.Height - durysMap[i].Height());
+                                    
+                }
+               
+                //Sonu kolizija
+              
+                
+                    buvoKairej = false;
+                    buvoDesinej = false;
+
+                    //-------------------------------------------------------------------------------------------------
+                    //Buvusi pozicija
+                    if (buvusKaires < durysMap[i].posLeft() && buvusKaires + playerStruct.playerWidth < durysMap[i].posLeft()
+                       && ((playerStruct.playerTopPosition < durysMap[i].posTop() || playerStruct.playerTopPosition + playerStruct.playerHeight < playerStruct.playerTopPosition) || (durysMap[i].posTop() + durysMap[i].Height() > playerStruct.playerTopPosition
+                       || playerStruct.playerTopPosition + playerStruct.playerHeight < durysMap[i].posTop() + durysMap[i].Height())))
+                    {
+                        buvoKairej = true;
+
+
+                    }
+                    else if (buvusKaires > durysMap[i].posLeft() + durysMap[i].Width() && buvusKaires + playerStruct.playerWidth > durysMap[i].posLeft() + durysMap[i].Width()
+                       && ((playerStruct.playerTopPosition < durysMap[i].posTop() || playerStruct.playerTopPosition + playerStruct.playerHeight < playerStruct.playerTopPosition) || (durysMap[i].posTop() + durysMap[i].Height() > playerStruct.playerTopPosition
+                       || playerStruct.playerTopPosition + playerStruct.playerHeight < durysMap[i].posTop() + durysMap[i].Height())))
+                    {
+                        buvoDesinej = true;
+                    }
+
+                    //---------------------------------------------------------------------------------------------------------------------
+
+                    if (playerStruct.playerTopPosition + playerStruct.playerHeight >= durysMap[i].posTop() + 1 //Taisiau, kaip ir gerai
+                                          && playerStruct.playerTopPosition <= durysMap[i].posTop() + durysMap[i].Height() - 1)
+                    {
+                        //RIGHT collision. (platWidth / 2 - 1) - even if player is in platform 
+                        // (from left) and don't touch the middle he collides with left
+
+                        if (buvoKairej && (playerStruct.playerLeftPosition + playerStruct.playerWidth) + 1 >= durysMap[i].posLeft()
+                            && (playerStruct.playerLeftPosition + playerStruct.playerWidth) <= durysMap[i].posLeft() + durysMap[i].Width())
+                        {
+                            //playerStruct.playerLeftPosition = durysMap[i].posLeft() - playerStruct.playerWidth;
+                            //stopRight = true;// stops moving right
+                            player.Fill = new SolidColorBrush(Color.Black);
+                            playerStruct.laimejo = true;
+
+                            break;
+                        }
+                        //else stopRight = false;
+
+                        //LEFT collision. (platWidth / 2 - 1) - even if player is in platform 
+                        // (from right) and don't touch the middle he collides with right
+
+                        if (buvoDesinej && playerStruct.playerLeftPosition - 1 <= durysMap[i].posLeft() + durysMap[i].Width()
+                            && playerStruct.playerLeftPosition >= durysMap[i].posLeft())
+                        {
+                            //playerStruct.playerLeftPosition = durysMap[i].posLeft() + durysMap[i].Width();
+                            //stopLeft = true;// stops moving left
+                            player.Fill = new SolidColorBrush(Color.Black);
+                            playerStruct.laimejo = true;
+                            break;
+                        }
+                        //else stopLeft = false;
+
+                    }
+                    //else
+                    //{
+                    //    stopRight = false;
+                    //    stopLeft = false;
+                    //}
+
+             
+
+            }
+        }
     }
 }
