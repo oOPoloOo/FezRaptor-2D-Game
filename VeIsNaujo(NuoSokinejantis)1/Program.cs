@@ -17,11 +17,7 @@ using Gadgeteer.Modules.GHIElectronics;
 
 //Pirmas lygis V11
 //Is ansciau daryt, kad mirgsetu ant lavos
-//Taskai dideja del snaigiu
-//Suvarkiau, kad po mirties ant lavos dar speja pasokt
-//Lavos metode, po gyvybiu minusavimo pridejau //Is ansciau daryt, kad mirgsetu ant lavos
-//Sutvarkiau taskus, kad laiko taskai negaletu but neigiami
-
+//Gyvybes rodo led stripas
 
 
 
@@ -71,8 +67,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
             public bool neAntZemes;
             public bool mire;
             public bool laimejo;
+            public bool minusGyvybe;
             //  playerBottomPosition = playerTopPosition + playerHeight;
-            public PlayerStruct(int playerTopPos, int playerLeftPos, int playerH, int playerW, int jumpP, bool jmp, int pow, bool antPavirsiaus, int lives, int livesCount, bool neZeme, bool antLavos, bool die, bool win)
+            public PlayerStruct(int playerTopPos, int playerLeftPos, int playerH, int playerW, int jumpP, bool jmp, int pow, bool antPavirsiaus, int lives, int livesCount, bool neZeme, bool antLavos, bool die, bool win, bool minus)
             {
                 playerTopPosition = playerTopPos;
 
@@ -90,12 +87,14 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 antLavosPavirsiaus = antLavos;
                 mire = die;
                 laimejo = win;
+                minusGyvybe = minus;
 
                 //playerBottomPosition = playerTopPosition + playerHeight;
                 //playerRightPosition = playerLeftPosition + playerWidth;
             }
         }
-        PlayerStruct playerStruct = new PlayerStruct(0, 0, 20, 20, 25, true, 0, false, 6, 0, true, false, false, false);
+       static  int gyvybiuSk = 7; // Turi but [0;7] ribose, nes naudojamas led strip
+       PlayerStruct playerStruct = new PlayerStruct(0, 0, 20, 20, 25, true, 0, false, gyvybiuSk, 0, true, false, false, false, false);
 
 
 
@@ -310,7 +309,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
             }
 
-
+            ledStrip.SetLeds(gyvybiuSk);
 
             // Platformer map
             //Sunki versija
@@ -468,6 +467,12 @@ namespace VeIsNaujo_NuoSokinejantis_1
         void jumpTimer_Tick(GT.Timer timer)
         {
 
+            if (playerStruct.minusGyvybe)
+            {
+                ledStrip.SetLed(gyvybiuSk - (playerStruct.gyvybes + 1), false);
+                playerStruct.minusGyvybe = false;
+            }
+      
             //-------------------------------------------------------------------------------------------------------
             // PLATFORMOS KOLIZIJA IR JUDEJIMAS
             //------------------------------------------------------------------------------------------------------
@@ -535,7 +540,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 {
                     playerStruct.playerTopPosition = 240;
                     playerStruct.playerLeftPosition = 0;
-                    playerStruct.gyvybes = 6;
+                    playerStruct.gyvybes = gyvybiuSk;
                     laikoTaskai = duotaLaiko;
                     snaigiuTaskai = 0;
                     playerStruct.laimejo = false;
@@ -564,7 +569,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 // Application.Current.Run();
                 playerStruct.playerTopPosition = 240;
                 playerStruct.playerLeftPosition = 0;
-                playerStruct.gyvybes = 6;
+                playerStruct.gyvybes = gyvybiuSk;
                 snaigiuTaskai = 0;
                 laikoTaskai = duotaLaiko;
                 playerStruct.mire = false;
@@ -642,7 +647,11 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         str.playerTopPosition = map[i].posTop() - str.playerHeight;
                         str.jumped = false;
 
-                        if (str.power < -40) str.gyvybes -= 20;//Kritimo is aukstai zala
+                        if (str.power < -40)
+                        {
+                            str.gyvybes -= 20;//Kritimo is aukstai zala
+                            str.minusGyvybe = true;
+                        }
                         str.power = 0;
                         break;
 
@@ -673,7 +682,12 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 str.jumped = false;
                 str.neAntZemes = false;
 
-                if (str.power < -40) str.gyvybes -= 20;// Kritimo is aukstai zala
+                if (str.power < -40) 
+                {
+                    str.gyvybes -= 20;// Kritimo is aukstai zala
+                    str.minusGyvybe = true;
+                }
+
                 str.power = 0;
             }
 
@@ -936,7 +950,11 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         Zaidejas.jumped = false;
                         Zaidejas.antSpyglPavirsiaus = true;
 
-                        if (Zaidejas.power < -40) Zaidejas.gyvybes -= 20;// Kritimo is aukstai zala
+                        if (Zaidejas.power < -40)
+                        {
+                            Zaidejas.gyvybes -= 20;// Kritimo is aukstai zala
+                            Zaidejas.minusGyvybe = true;
+                        }
                         Zaidejas.power = 0;
 
 
@@ -946,6 +964,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     if (buvoVirsui && spygl[index].posBottom() >= Zaidejas.playerTopPosition)
                     {
                         Zaidejas.gyvybes--;
+                        Zaidejas.minusGyvybe = true;
                         //      tunes.Play(500,200);
                         //.Play(200);
                         //.Stop();
@@ -1014,7 +1033,11 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         Zaidejas.antLavosPavirsiaus = true;
                         Zaidejas.jumped = false;//Be sito nesokineja nat lavos
 
-                        if (Zaidejas.power < -40) Zaidejas.gyvybes -= 20;// Kritimo is aukstai zala
+                        if (Zaidejas.power < -40)
+                        {
+                            Zaidejas.gyvybes -= 20;// Kritimo is aukstai zala
+                            Zaidejas.minusGyvybe = true;
+                        }
                         Zaidejas.power = 0;
 
                         if (Zaidejas.gyvybiuSkaitiklis > 5)// Reguliuoja gyvybiu ateminejimo greiti
@@ -1023,6 +1046,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                             Zaidejas.gyvybiuSkaitiklis = 0;
                             if (!Zaidejas.mire) label.TextContent = "Gyvybes: " + Zaidejas.gyvybes;
                             if (Zaidejas.gyvybes < 1) Zaidejas.mire = true;
+                            Zaidejas.minusGyvybe = true;
                         }
                         Zaidejas.gyvybiuSkaitiklis++;
 
