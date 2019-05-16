@@ -15,12 +15,12 @@ using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
 
-//Pirmas lygis V10
+//Pirmas lygis V11
 //Is ansciau daryt, kad mirgsetu ant lavos
-//Pridejau label taskam isvest ir aprasiau jo funkcionaluma
-//Pridejau snaiges
-//Padariau Tasku sistema: gyvybes + lakas + Snaiges
-
+//Taskai dideja del snaigiu
+//Suvarkiau, kad po mirties ant lavos dar speja pasokt
+//Lavos metode, po gyvybiu minusavimo pridejau //Is ansciau daryt, kad mirgsetu ant lavos
+//Sutvarkiau taskus, kad laiko taskai negaletu but neigiami
 
 
 
@@ -510,7 +510,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             if (!playerStruct.mire) label.TextContent = "Gyvybes: " + playerStruct.gyvybes;
             if (!playerStruct.mire && !playerStruct.laimejo)
             {
-                laikoTaskai--;
+               if(laikoTaskai > 0) laikoTaskai--;
                 galutiniaiTaskai = (snaigiuTaskai * 300 + playerStruct.gyvybes * 150 + laikoTaskai);// Tasku formule
                 scoreLabel.TextContent = "Taskai: " + galutiniaiTaskai;
             }
@@ -1021,9 +1021,11 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         {
                             Zaidejas.gyvybes--;
                             Zaidejas.gyvybiuSkaitiklis = 0;
+                            if (Zaidejas.gyvybes > 1) Zaidejas.mire = true;
                         }
                         Zaidejas.gyvybiuSkaitiklis++;
                        
+                        
                         break;
 
                     }
