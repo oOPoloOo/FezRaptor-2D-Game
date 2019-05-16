@@ -15,11 +15,13 @@ using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
 
-//Pirmas lygis V9
-//Pradejau daryt, kad mirgsetu ant lavos
-//Veikiancios dyrys
-//Pabandziau sutvarkyt mirties teksta, kad visas butu ant virsasu
-//Kiekviena karta ji istrindams ir vel sukurdamas paskutini - ne taaip lengva kaip atrodo, nes jo isvis nemeta. Atidedu
+//Pirmas lygis V10
+//Is ansciau daryt, kad mirgsetu ant lavos
+//Pridejau label taskam isvest ir aprasiau jo funkcionaluma
+//Pridejau snaiges
+//Padariau Tasku sistema: gyvybes + lakas + Snaiges
+
+
 
 
 
@@ -38,8 +40,10 @@ namespace VeIsNaujo_NuoSokinejantis_1
         Text label2;//Pabaigos Tekstas
         Text label3;// Restart Tekstas
         Text label4;// Pergales Tekstas
+        Text scoreLabel;// Pergales Tekstas
         
         Rectangle player;
+        Rectangle snowflake;
 
         public struct PlayerStruct
         {
@@ -177,6 +181,18 @@ namespace VeIsNaujo_NuoSokinejantis_1
         int duruHeigth = 35;
         int duruWidth = 25;
         Platform[] durysMap = new Platform[duruMaxSk];
+
+        //Snaige
+        int snowflakeLeftPosition = 150;
+        int snowflakeTopPosition = 50;
+        Random randomNumberGenerator = new Random();
+        GT.Timer snowFlakeTimer = new GT.Timer(75);
+
+        //Taskai
+        int galutiniaiTaskai = 0;
+        int snaigiuTaskai = 0;
+        static int duotaLaiko = 1200;
+        int laikoTaskai = duotaLaiko;
         
         void ProgramStarted()
         {
@@ -191,6 +207,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
             {
                 jumpTimer.Tick += new GT.Timer.TickEventHandler(jumpTimer_Tick);
                 jumpTimer.Start();
+
+                snowFlakeTimer.Tick += new GT.Timer.TickEventHandler(SnowflakeTimer_Tick);
+                snowFlakeTimer.Start();
             }
 
             
@@ -234,6 +253,11 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 player.Fill = new SolidColorBrush(Colors.Red);
                 layout.Children.Add(player);
 
+                //add the snowflake
+                snowflake = new Rectangle(10, 10);
+                snowflake.Fill = new SolidColorBrush(Colors.White);
+                layout.Children.Add(snowflake);
+
                 //label
                 label = new Text();
                 label.Height = 272;// buvo 240
@@ -243,6 +267,16 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 layout.Children.Add(label);
                 Canvas.SetLeft(label, 0);
                 Canvas.SetTop(label, 0);
+
+                //Taskai
+                scoreLabel = new Text();
+                scoreLabel.Height = 272;// buvo 240
+                scoreLabel.Width = 480;// buvo 320
+                scoreLabel.ForeColor = Colors.White;
+                scoreLabel.Font = Resources.GetFont(Resources.FontResources.NinaB);
+                layout.Children.Add(scoreLabel);
+                Canvas.SetLeft(scoreLabel, 0);
+                Canvas.SetTop(scoreLabel, 0 + label.Font.Height);
             }
 
             ////Tekstas mirties uzrasui
@@ -411,6 +445,25 @@ namespace VeIsNaujo_NuoSokinejantis_1
             mainWindow.Child = layout;
         }
 
+        void SnowflakeTimer_Tick(GT.Timer timer)
+        {
+            snowflakeTopPosition += 5;
+            if (snowflakeTopPosition >= 240)
+            {
+                ResetSnowflake();
+            }
+            snowflakeLeftPosition += (randomNumberGenerator.Next(15) - 7);
+            if (snowflakeLeftPosition < 10) snowflakeLeftPosition = 0;
+            if (snowflakeLeftPosition > 470) snowflakeLeftPosition = 470;// buvo 300
+            Canvas.SetLeft(snowflake, snowflakeLeftPosition);
+            Canvas.SetTop(snowflake, snowflakeTopPosition);
+        }
+
+        private void ResetSnowflake()
+        {
+            snowflakeTopPosition = 50;
+            snowflakeLeftPosition = randomNumberGenerator.Next(300) + 10;
+        }
 
         void jumpTimer_Tick(GT.Timer timer)
         {
@@ -449,9 +502,18 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
             //Durys
             Durys();
-           
-            
+
+            //Snaiges kolizijos tikrinimas
+            CheckForLanding();
+
+          //  scoreLabel.TextContent = "Taskai: " + (galutiniaiTaskai*300 + playerStruct.gyvybes*150);
             if (!playerStruct.mire) label.TextContent = "Gyvybes: " + playerStruct.gyvybes;
+            if (!playerStruct.mire && !playerStruct.laimejo)
+            {
+                laikoTaskai--;
+                galutiniaiTaskai = (snaigiuTaskai * 300 + playerStruct.gyvybes * 150 + laikoTaskai);// Tasku formule
+                scoreLabel.TextContent = "Taskai: " + galutiniaiTaskai;
+            }
             if (playerStruct.gyvybes < 1) playerStruct.mire = true;
             if (playerStruct.mire && !playerStruct.laimejo)
             {
@@ -473,7 +535,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 {
                     playerStruct.playerTopPosition = 240;
                     playerStruct.playerLeftPosition = 0;
-                    playerStruct.gyvybes = 6;                   
+                    playerStruct.gyvybes = 6;
+                    laikoTaskai = duotaLaiko;
+                    snaigiuTaskai = 0;
                     playerStruct.laimejo = false;
 
                     for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
@@ -501,6 +565,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 playerStruct.playerTopPosition = 240;
                 playerStruct.playerLeftPosition = 0;
                 playerStruct.gyvybes = 6;
+                snaigiuTaskai = 0;
+                laikoTaskai = duotaLaiko;
                 playerStruct.mire = false;
              
                 
@@ -1047,6 +1113,23 @@ namespace VeIsNaujo_NuoSokinejantis_1
              
 
             }
-        }
+        }// void Durys end
+      
+        void CheckForLanding()
+        {
+            if (snowflakeTopPosition > playerStruct.playerTopPosition && snowflakeTopPosition < playerStruct.playerTopPosition + playerStruct.playerHeight)
+            {
+                if (snowflakeLeftPosition + 10 >= playerStruct.playerLeftPosition
+                &&
+                snowflakeLeftPosition <= playerStruct.playerLeftPosition + playerStruct.playerWidth)
+                {
+                    snaigiuTaskai++;
+                    //label2.TextContent = "platTOPPosition: " + platTOPPosition;
+                    ResetSnowflake();
+                }
+
+            }
+
+        } //void CheckForLanding end
     }
 }
