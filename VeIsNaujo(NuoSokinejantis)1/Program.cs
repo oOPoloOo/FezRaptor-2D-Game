@@ -211,6 +211,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 snowFlakeTimer.Start();
             }
 
+        
 
 
         }
@@ -467,12 +468,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
         void jumpTimer_Tick(GT.Timer timer)
         {
 
-            if (playerStruct.minusGyvybe)
-            {
-                ledStrip.SetLed(gyvybiuSk - (playerStruct.gyvybes + 1), false);
-                playerStruct.minusGyvybe = false;
-            }
-      
+           
             //-------------------------------------------------------------------------------------------------------
             // PLATFORMOS KOLIZIJA IR JUDEJIMAS
             //------------------------------------------------------------------------------------------------------
@@ -519,7 +515,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 galutiniaiTaskai = (snaigiuTaskai * 300 + playerStruct.gyvybes * 150 + laikoTaskai);// Tasku formule
                 scoreLabel.TextContent = "Taskai: " + galutiniaiTaskai;
             }
-            if (playerStruct.gyvybes < 1) playerStruct.mire = true;
+            if (playerStruct.gyvybes < 1) 
+                playerStruct.mire = true;
             if (playerStruct.mire && !playerStruct.laimejo)
             {
                 label2.TextContent = "Zaidimas Baigtas!";
@@ -531,6 +528,13 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 label3.TextContent = "";
                 label4.TextContent = "";
             }
+            //LedStrip
+            if (playerStruct.minusGyvybe)
+            {
+                ledStrip.SetLed(gyvybiuSk - (playerStruct.gyvybes + 1), false);
+                playerStruct.minusGyvybe = false;
+            }
+      
             if (playerStruct.laimejo && !playerStruct.mire)
             {
                 label4.TextContent = "Jus perejote lygi!!!";
@@ -649,7 +653,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
                         if (str.power < -40)
                         {
-                            str.gyvybes -= 20;//Kritimo is aukstai zala
+                            str.gyvybes -= 1;//Kritimo is aukstai zala
                             str.minusGyvybe = true;
                         }
                         str.power = 0;
@@ -684,7 +688,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
                 if (str.power < -40) 
                 {
-                    str.gyvybes -= 20;// Kritimo is aukstai zala
+                    str.gyvybes -= 1;// Kritimo is aukstai zala
                     str.minusGyvybe = true;
                 }
 
@@ -952,7 +956,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
                         if (Zaidejas.power < -40)
                         {
-                            Zaidejas.gyvybes -= 20;// Kritimo is aukstai zala
+                            Zaidejas.gyvybes -= 1;// Kritimo is aukstai zala
                             Zaidejas.minusGyvybe = true;
                         }
                         Zaidejas.power = 0;
@@ -1035,7 +1039,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
                         if (Zaidejas.power < -40)
                         {
-                            Zaidejas.gyvybes -= 20;// Kritimo is aukstai zala
+                            Zaidejas.gyvybes -= 1;// Kritimo is aukstai zala
                             Zaidejas.minusGyvybe = true;
                         }
                         Zaidejas.power = 0;
