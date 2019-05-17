@@ -18,6 +18,10 @@ using Gadgeteer.Modules.GHIElectronics;
 //Pirmas lygis V11
 //Is ansciau daryt, kad mirgsetu ant lavos
 //Gyvybes rodo led stripas
+//Optimizavau zaidima - trinu ir is naujo kuriu tik spyglius
+//Sutaisiau restartinimo problema - pridejau duruId = 0; i prie resetinimu// Dar nesutvarkuta XD
+//Pritaikiau problemos prendimus rastus testavimo sakoj - bet vistiek nepadejo
+//Dabar net pirma kart nerestartina ir spyglys krinta ir po mirties.
 
 
 
@@ -386,25 +390,27 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
 
             // Adding platforms to screen
-            for (int i = 0; i < platformId; i++)
+            if (!restartinimas)
             {
-                layout.Children.Add(platformMap[i].get());
+                for (int i = 0; i < platformId; i++)
+                {
+                    layout.Children.Add(platformMap[i].get());
+                }
+                for (int i = 0; i < lavaId; i++)
+                {
+                    layout.Children.Add(lavaMap[i].get());
+                }
+                for (int i = 0; i < duruId; i++)
+                {
+                    layout.Children.Add(durysMap[i].get());
+                }
             }
-
+          
+            //Spyglius kuriu kaskart per naujo, nes jie keicia pozicija zaidimo metu
             for (int i = 0; i < spygliaiId; i++)
             {
                 layout.Children.Add(spygliaiMap[i].get());
             }
-
-            for (int i = 0; i < lavaId; i++)
-            {
-                layout.Children.Add(lavaMap[i].get());
-            }
-            for (int i = 0; i < duruId; i++)
-            {
-                layout.Children.Add(durysMap[i].get());
-            }
-
             if (!restartinimas)
             {
                 //Perkeliau po visu kompunentu idejimo, kad mirties tekstas butu ant virsasu
@@ -548,14 +554,16 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     laikoTaskai = duotaLaiko;
                     snaigiuTaskai = 0;
                     playerStruct.laimejo = false;
-
-                    for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
-                    for (int i = 0; i < lavaId; i++) layout.Children.Remove(lavaMap[i].get());
+                   
+                    //for (int i = 0; i < duruId; i++) layout.Children.Remove(durysMap[i].get());
+                    //for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
+                    //for (int i = 0; i < lavaId; i++) layout.Children.Remove(lavaMap[i].get());
                     for (int i = 0; i < spygliaiId; i++) layout.Children.Remove(spygliaiMap[i].get());
 
                     lavaId = 0;
                     platformId = 0;
                     spygliaiId = 0;
+                    duruId = 0;
                     restartinimas = true;
                     player.Fill = new SolidColorBrush(Colors.Red);
 
@@ -584,14 +592,15 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
                 //layout.Children.Remove(label);//Sitam nereikia, nes niekas neuzstoja
 
-
-                for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
-                for (int i = 0; i < lavaId; i++) layout.Children.Remove(lavaMap[i].get());
+                //for (int i = 0; i < duruId; i++) layout.Children.Remove(durysMap[i].get());
+                //for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
+                //for (int i = 0; i < lavaId; i++) layout.Children.Remove(lavaMap[i].get());
                 for (int i = 0; i < spygliaiId; i++) layout.Children.Remove(spygliaiMap[i].get());
 
                 lavaId = 0;
                 platformId = 0;
                 spygliaiId = 0;
+                duruId = 0;
                 restartinimas = true;
 
                 //if (restartinimas)// Su remive neiseina
