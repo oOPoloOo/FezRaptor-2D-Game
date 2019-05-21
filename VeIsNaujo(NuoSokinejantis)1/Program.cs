@@ -15,8 +15,12 @@ using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
 
-//Pirmas lygis V11 
-// Yra life baras ir gyvybes. Veikia ir prijungta prie gyvybiu sistemos
+//Pirmas lygis V12 
+//Padariau du lygius
+//Perrejus viena ir spaudus restart eina i kita
+//Kol neperreini i kita lygi restartina tam paciam
+//Gyvybes nepersikelia
+
 
 
 
@@ -163,7 +167,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
         //bool spyglKrist = false;
         //bool pirmasKartas = true;
         //bool spyglNukrito = false;
-        static int spygliuMaxSk = 10;
+        static int spygliuMaxSk = 20;
         int spygliaiId = 0;
         int spyglHeigth = 20;
         int spyglWidth = 10;
@@ -173,7 +177,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
         Platform[] spygliaiMap = new Platform[spygliuMaxSk];
 
         //Lava
-        static int lavosMaxSk = 10;
+        static int lavosMaxSk = 35;
         int lavaId = 0;
         int lavaHeigth = 25;
         int lavaWidth = 25;
@@ -200,6 +204,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
         int snaigiuTaskai = 0;
         static int duotaLaiko = 1200;
         int laikoTaskai = duotaLaiko;
+        
+        //Lygiai
+        int lygis = 1;
 
 
 
@@ -321,67 +328,89 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
             ledStrip.SetLeds(lifeBarSk);
             led7R.SetLeds(gyvybiuSk);
-            // Platformer map            
+
             string[] map = new string[12];
-            map[0] = ".....................................";
-            map[1] = ".....................................";
-            map[2] = ".....................................";
-            map[3] = ".....................................";
-            map[4] = ".................#...................";
-            map[5] = "...........S...###...................";
-            map[6] = ".#...S...S...S.......................";
-            map[7] = ".......S.............................";
-            map[8] = ".....................................";
-            map[9] = ".....................................";
-            map[10] = "...#................................";
-            map[11] = "####LLLLLLLLL#...D..................";
-
-
-
-
-            for (int i = 0; i < map.Length; i++)
+            if (lygis == 1)
             {
-                for (int j = 0; j < map[i].Length; j++)
-                {
-                    if (map[i][j] == '#')
-                    {
-                        platformMap[platformId] = new Platform(platWidth, platHeight);
-                        platformMap[platformId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
-                        platformId++;
-                    }
+                // Pirmas Lygis           
+               
+                map[0] = ".....................................";
+                map[1] = ".....................................";
+                map[2] = ".....................................";
+                map[3] = ".....................................";
+                map[4] = ".................#...................";
+                map[5] = "...........S...###...................";
+                map[6] = ".#...S...S...S.......................";
+                map[7] = ".......S.............................";
+                map[8] = ".....................................";
+                map[9] = ".....................................";
+                map[10] = "...#................................";
+                map[11] = "####LLLLLLLLL#...D..................";
+            }
+            else if (lygis == 2)
+            {
+                // Pirmas Lygis           
+               // string[] map = new string[12];
+                map[0] = ".....................................";
+                map[1] = ".....................................";
+                map[2] = ".....................................";
+                map[3] = ".....................................";
+                map[4] = ".....................................";
+                map[5] = "............S........................";
+                map[6] = "##.S.....S...........................";
+                map[7] = ".......S.............................";
+                map[8] = "................S....................";
+                map[9] = ".....................................";
+                map[10] = "....................................";
+                map[11] = "LLLLLLLLLLLLLLL..D..................";
 
-                    if (map[i][j] == 'S')
-                    {
-                        spygliaiMap[spygliaiId] = new Platform(spyglWidth, spyglHeigth);
-                        spygliaiMap[spygliaiId].paint(Colors.Blue);
-                        // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
-                        spygliaiMap[spygliaiId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
-                        spygliaiId++;
-                    }
-                    if (map[i][j] == 'L')
-                    {
-                        lavaMap[lavaId] = new Platform(lavaWidth, lavaHeigth);
-                        lavaMap[lavaId].paint(Colors.Magenta);
-                        // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
-                        lavaMap[lavaId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
-                        lavaId++;
-                    }
-                    if (map[i][j] == 'D')
-                    {
-                        durysMap[duruId] = new Platform(duruWidth, duruHeigth);
-                        durysMap[duruId].paint(Colors.Green);
-                        // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
-                        durysMap[duruId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
-                        duruId++;
-                    }
-                }
+
             }
 
+                
+                for (int i = 0; i < map.Length; i++)
+                {
+                    for (int j = 0; j < map[i].Length; j++)
+                    {
+                        if (map[i][j] == '#')
+                        {
+                            platformMap[platformId] = new Platform(platWidth, platHeight);
+                            platformMap[platformId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
+                            platformId++;
+                        }
+
+                        if (map[i][j] == 'S')
+                        {
+                            spygliaiMap[spygliaiId] = new Platform(spyglWidth, spyglHeigth);
+                            spygliaiMap[spygliaiId].paint(Colors.Blue);
+                            // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
+                            spygliaiMap[spygliaiId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
+                            spygliaiId++;
+                        }
+                        if (map[i][j] == 'L')
+                        {
+                            lavaMap[lavaId] = new Platform(lavaWidth, lavaHeigth);
+                            lavaMap[lavaId].paint(Colors.Magenta);
+                            // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
+                            lavaMap[lavaId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
+                            lavaId++;
+                        }
+                        if (map[i][j] == 'D')
+                        {
+                            durysMap[duruId] = new Platform(duruWidth, duruHeigth);
+                            durysMap[duruId].paint(Colors.Green);
+                            // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
+                            durysMap[duruId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
+                            duruId++;
+                        }
+                    }
+                }
+            
 
 
             // Adding platforms to screen
-            if (!restartinimas)
-            {
+            //if (!restartinimas)
+            //{
                 for (int i = 0; i < platformId; i++)
                 {
                     layout.Children.Add(platformMap[i].get());
@@ -394,7 +423,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 {
                     layout.Children.Add(durysMap[i].get());
                 }
-            }
+            //}
             //Spygliai keicia pozicija, todel reikia kurt per naujo
             for (int i = 0; i < spygliaiId; i++)
             {
@@ -561,7 +590,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
                 if (joystick.IsPressed)
                 {
-                    playerStruct.playerTopPosition = 240;
+                   // playerStruct.playerTopPosition = 240;
+                    playerStruct.playerTopPosition = 0;
                     playerStruct.playerLeftPosition = 0;
                     playerStruct.lifeBarGyvybes = lifeBarSk;
                     playerStruct.gyvybes = gyvybiuSk;
@@ -569,9 +599,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     snaigiuTaskai = 0;
                     playerStruct.laimejo = false;
 
-                    //for (int i = 0; i < duruId; i++) layout.Children.Remove(durysMap[i].get());
-                    //for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
-                    //for (int i = 0; i < lavaId; i++) layout.Children.Remove(lavaMap[i].get());
+                    for (int i = 0; i < duruId; i++) layout.Children.Remove(durysMap[i].get());
+                    for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
+                    for (int i = 0; i < lavaId; i++) layout.Children.Remove(lavaMap[i].get());
                     for (int i = 0; i < spygliaiId; i++) layout.Children.Remove(spygliaiMap[i].get());
 
                     lavaId = 0;
@@ -593,7 +623,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 //SetupUI();
                 // base.Run();
                 // Application.Current.Run();
-                playerStruct.playerTopPosition = 240;
+               // playerStruct.playerTopPosition = 240;
+                playerStruct.playerTopPosition = 0;
                 playerStruct.playerLeftPosition = 0;
                 playerStruct.lifeBarGyvybes = lifeBarSk;
                 playerStruct.gyvybes = gyvybiuSk;
@@ -607,9 +638,9 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
                 //layout.Children.Remove(label);//Sitam nereikia, nes niekas neuzstoja
 
-                //for (int i = 0; i < duruId; i++) layout.Children.Remove(durysMap[i].get());
-                //for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
-                //for (int i = 0; i < lavaId; i++) layout.Children.Remove(lavaMap[i].get());
+                for (int i = 0; i < duruId; i++) layout.Children.Remove(durysMap[i].get());
+                for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
+                for (int i = 0; i < lavaId; i++) layout.Children.Remove(lavaMap[i].get());
                 for (int i = 0; i < spygliaiId; i++) layout.Children.Remove(spygliaiMap[i].get());
 
 
@@ -1150,6 +1181,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         //stopRight = true;// stops moving right
                         player.Fill = new SolidColorBrush(Color.Black);
                         playerStruct.laimejo = true;
+                        lygis = 2;
 
                         break;
                     }
@@ -1165,6 +1197,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         //stopLeft = true;// stops moving left
                         player.Fill = new SolidColorBrush(Color.Black);
                         playerStruct.laimejo = true;
+                        lygis = 2;
                         break;
                     }
                     //else stopLeft = false;
