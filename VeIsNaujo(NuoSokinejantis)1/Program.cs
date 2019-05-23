@@ -15,10 +15,12 @@ using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
 
-//Pirmi lygiai V14
+//Pirmi lygiai V15
 //Padariau gyvybiu pernasa
 //Sutvarkiau 2 lygi
 //Padariau 3 lygi, kad butu zaidziamas, kad pereidinetu normaliai
+//Padaryt, kad galima butu galima restartint zaidimo metu - ne tik mirus
+//Restartinus grazina gyvybes i max ir i to lygio, kuriame restartinta pradzia.
 
 
 
@@ -645,12 +647,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             if (playerStruct.mire && joystick.IsPressed && !playerStruct.laimejo)
             {
 
-                // nieko nedaro
-                //ProgramStarted();
-                //SetupUI();
-                // base.Run();
-                // Application.Current.Run();
-               // playerStruct.playerTopPosition = 240;
+              
                 playerStruct.playerTopPosition = 0;
                 playerStruct.playerLeftPosition = 0;
                 playerStruct.lifeBarGyvybes = lifeBarSk;
@@ -659,11 +656,6 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 laikoTaskai = duotaLaiko;
                 playerStruct.mire = false;
 
-
-                //mainWindow.Child = null;
-                //mainWindow = null;
-
-                //layout.Children.Remove(label);//Sitam nereikia, nes niekas neuzstoja
 
                 for (int i = 0; i < duruId; i++) layout.Children.Remove(durysMap[i].get());
                 for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
@@ -677,20 +669,37 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 duruId = 0;
                 restartinimas = true;
 
-                //if (restartinimas)// Su remive neiseina
-                //{
-                //    layout.Children.Remove(label2);// Kiekviena kart kuriu naujus, kad butu ant virsasu
-                //    layout.Children.Remove(label3);
-                //}
 
                 ProgramStarted();
 
-                //label2.TextContent = "";
-                //label3.TextContent = "";
-
-                //SetupUI(); sito ne tik nevykdo, bet ji idejus neveikia visas if
             }
+             if(kairysMygtukas.Pressed)
+             {
 
+                 playerStruct.playerTopPosition = 0;
+                 playerStruct.playerLeftPosition = 0;
+                 playerStruct.lifeBarGyvybes = lifeBarSk;
+                 playerStruct.gyvybes = gyvybiuSk;
+                 snaigiuTaskai = 0;
+                 laikoTaskai = duotaLaiko;
+                 playerStruct.mire = false;
+
+
+                 for (int i = 0; i < duruId; i++) layout.Children.Remove(durysMap[i].get());
+                 for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
+                 for (int i = 0; i < lavaId; i++) layout.Children.Remove(lavaMap[i].get());
+                 for (int i = 0; i < spygliaiId; i++) layout.Children.Remove(spygliaiMap[i].get());
+
+
+                 lavaId = 0;
+                 platformId = 0;
+                 spygliaiId = 0;
+                 duruId = 0;
+                 restartinimas = true;
+
+
+                 ProgramStarted();
+             }
 
         }//jumpTimer end
 
