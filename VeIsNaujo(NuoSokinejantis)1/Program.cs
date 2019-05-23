@@ -15,11 +15,10 @@ using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
 
-//Pirmas lygis V12 
-//Padariau du lygius
-//Perrejus viena ir spaudus restart eina i kita
-//Kol neperreini i kita lygi restartina tam paciam
-//Gyvybes nepersikelia
+//Pirmi lygiai V13
+//Padariau gyvybiu pernasa
+//Sutvarkiau 2 lygi
+
 
 
 
@@ -207,6 +206,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
         
         //Lygiai
         int lygis = 1;
+        bool perejoLygi = false;
 
 
 
@@ -326,8 +326,11 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
             }
 
-            ledStrip.SetLeds(lifeBarSk);
-            led7R.SetLeds(gyvybiuSk);
+            if (!perejoLygi)
+            {
+                ledStrip.SetLeds(lifeBarSk);
+                led7R.SetLeds(gyvybiuSk);
+            }
 
             string[] map = new string[12];
             if (lygis == 1)
@@ -357,12 +360,12 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 map[3] = ".....................................";
                 map[4] = ".....................................";
                 map[5] = "............S........................";
-                map[6] = "##.S.....S...........................";
+                map[6] = "##..S....S...........................";
                 map[7] = ".......S.............................";
-                map[8] = "................S....................";
+                map[8] = "...............S.....................";
                 map[9] = ".....................................";
                 map[10] = "....................................";
-                map[11] = "LLLLLLLLLLLLLLL..D..................";
+                map[11] = "LLLLLLLLLLLLLLL...D.................";
 
 
             }
@@ -593,8 +596,13 @@ namespace VeIsNaujo_NuoSokinejantis_1
                    // playerStruct.playerTopPosition = 240;
                     playerStruct.playerTopPosition = 0;
                     playerStruct.playerLeftPosition = 0;
-                    playerStruct.lifeBarGyvybes = lifeBarSk;
-                    playerStruct.gyvybes = gyvybiuSk;
+
+                    if (!perejoLygi)
+                    {
+                        playerStruct.lifeBarGyvybes = lifeBarSk;
+                        playerStruct.gyvybes = gyvybiuSk;
+                    }
+                   
                     laikoTaskai = duotaLaiko;
                     snaigiuTaskai = 0;
                     playerStruct.laimejo = false;
@@ -612,6 +620,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     player.Fill = new SolidColorBrush(Colors.Red);
 
                     ProgramStarted();
+                    perejoLygi = false;
 
                 }
             }
@@ -1181,7 +1190,13 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         //stopRight = true;// stops moving right
                         player.Fill = new SolidColorBrush(Color.Black);
                         playerStruct.laimejo = true;
-                        lygis = 2;
+
+                        if (lygis == 1)
+                        {
+                            lygis = 2;
+                            perejoLygi = true;
+                        }
+                        
 
                         break;
                     }
@@ -1197,7 +1212,12 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         //stopLeft = true;// stops moving left
                         player.Fill = new SolidColorBrush(Color.Black);
                         playerStruct.laimejo = true;
-                        lygis = 2;
+                       
+                        if(lygis == 1)
+                        {
+                            lygis = 2;
+                            perejoLygi = true;
+                        }
                         break;
                     }
                     //else stopLeft = false;
