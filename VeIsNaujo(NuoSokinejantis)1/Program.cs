@@ -15,9 +15,10 @@ using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
 
-//Pirmi lygiai V13
+//Pirmi lygiai V14
 //Padariau gyvybiu pernasa
 //Sutvarkiau 2 lygi
+//Padariau 3 lygi, kad butu zaidziamas, kad pereidinetu normaliai
 
 
 
@@ -207,6 +208,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
         //Lygiai
         int lygis = 1;
         bool perejoLygi = false;
+        int buvesLygis = 1;
+        int yraLygiu = 3;
 
 
 
@@ -366,8 +369,23 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 map[9] = ".....................................";
                 map[10] = "....................................";
                 map[11] = "LLLLLLLLLLLLLLL...D.................";
-
-
+            }
+            else if (lygis == 3)
+            {
+                // Pirmas Lygis           
+                // string[] map = new string[12];
+                map[0] = ".....................................";
+                map[1] = ".....................................";
+                map[2] = ".....................................";
+                map[3] = ".....................................";
+                map[4] = ".....................................";
+                map[5] = "...........S.........................";
+                map[6] = "........S.....#......................";
+                map[7] = "............S........................";
+                map[8] = ".....#...S...........................";
+                map[9] = "..S..................................";
+                map[10] = "....................................";
+                map[11] = "#LLLLLLLLLLLLLL...D.................";
             }
 
                 
@@ -1191,9 +1209,16 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         player.Fill = new SolidColorBrush(Color.Black);
                         playerStruct.laimejo = true;
 
-                        if (lygis == 1)
+                        //if (lygis == 1)
+                        //{   
+
+                        //    lygis = 2;
+                        //    perejoLygi = true;
+                        //}
+
+                        if (lygis < yraLygiu && !perejoLygi)
                         {
-                            lygis = 2;
+                            lygis++;
                             perejoLygi = true;
                         }
                         
@@ -1213,9 +1238,16 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         player.Fill = new SolidColorBrush(Color.Black);
                         playerStruct.laimejo = true;
                        
-                        if(lygis == 1)
+                        //if(lygis == 1)
+                        //{
+                        //    lygis = 2;
+                        //    perejoLygi = true;
+                        //}
+
+
+                        if (lygis < yraLygiu && !perejoLygi)
                         {
-                            lygis = 2;
+                            lygis++;
                             perejoLygi = true;
                         }
                         break;
