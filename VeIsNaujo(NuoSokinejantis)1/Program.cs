@@ -669,6 +669,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 duruId = 0;
                 restartinimas = true;
 
+                if (lygis == 2 || lygis == 3)
+                    lygis = 1;
 
                 ProgramStarted();
 
