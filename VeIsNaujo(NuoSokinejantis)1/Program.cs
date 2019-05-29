@@ -16,11 +16,9 @@ using Gadgeteer.Modules.GHIElectronics;
 
 
 //Pirmi lygiai V15
-//Padariau gyvybiu pernasa
-//Sutvarkiau 2 lygi
-//Padariau 3 lygi, kad butu zaidziamas, kad pereidinetu normaliai
-//Padaryt, kad galima butu galima restartint zaidimo metu - ne tik mirus
-//Restartinus grazina gyvybes i max ir i to lygio, kuriame restartinta pradzia.
+//Ta pati problema kaip ir su meniu
+//Pereina antra lygi, tada nesulaukia imput vis dar budamas ant duru ir pereina i trecia lygi
+//Sutvarkiau problema pridedamas signalo laukimo, bet tekstas atsirefresina, tik lygio pradzioj
 
 
 
@@ -78,10 +76,11 @@ namespace VeIsNaujo_NuoSokinejantis_1
             public bool neAntZemes;
             public bool mire;
             public bool laimejo;
+            public bool laimejoZaidima;
             public int gyvybes;
 
             //  playerBottomPosition = playerTopPosition + playerHeight;
-            public PlayerStruct(int playerTopPos, int playerLeftPos, int playerH, int playerW, int jumpP, bool jmp, int pow, bool antPavirsiaus, int barLives, int livesCount, bool neZeme, bool antLavos, bool die, bool win, int lives)
+            public PlayerStruct(int playerTopPos, int playerLeftPos, int playerH, int playerW, int jumpP, bool jmp, int pow, bool antPavirsiaus, int barLives, int livesCount, bool neZeme, bool antLavos, bool die, bool win, int lives, bool winGame)
             {
                 playerTopPosition = playerTopPos;
 
@@ -100,7 +99,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 mire = die;
                 laimejo = win;
                 gyvybes = lives;
-
+                laimejoZaidima = winGame;
 
                 //playerBottomPosition = playerTopPosition + playerHeight;
                 //playerRightPosition = playerLeftPosition + playerWidth;
@@ -108,7 +107,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
         }
         static int lifeBarSk = 7; // nekeist
         static int gyvybiuSk = 3;
-        PlayerStruct playerStruct = new PlayerStruct(0, 0, 20, 20, 25, true, 0, false, lifeBarSk, 0, true, false, false, false, gyvybiuSk);
+        PlayerStruct playerStruct = new PlayerStruct(0, 0, 20, 20, 25, true, 0, false, lifeBarSk, 0, true, false, false, false, gyvybiuSk, false);
 
 
 
@@ -212,6 +211,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
         bool perejoLygi = false;
         int buvesLygis = 1;
         int yraLygiu = 3;
+        bool nextLevel = false;
 
 
 
@@ -608,10 +608,29 @@ namespace VeIsNaujo_NuoSokinejantis_1
             //}
             if (playerStruct.laimejo && !playerStruct.mire)
             {
-                label4.TextContent = "Jus perejote lygi!!!";
-                label3.TextContent = "Paspauskite valdikli, kad kartotumete";
-
-                if (joystick.IsPressed)
+                if (!playerStruct.laimejoZaidima)
+                {
+                    label4.TextContent = "Jus perejote lygi!!!";
+                    label3.TextContent = "Paspauskite valdikli, kad kartotumete";
+                }
+                else
+                {
+                    label4.TextContent = "Jus laimejote zaidima!!!";
+                    label3.TextContent = "Paspauskite valdikli, kad pradetumete is naujo";
+                   // playerStruct.laimejoZaidima = false;
+                    //lygis = 1;
+                }
+                int sk = 1;
+                while(sk > 0)
+                {
+                    if(joystick.IsPressed)
+                    { 
+                        nextLevel = true;
+                        break;
+                    }
+                }
+                //if (joystick.IsPressed)  
+                if (nextLevel)
                 {
                    // playerStruct.playerTopPosition = 240;
                     playerStruct.playerTopPosition = 0;
@@ -639,9 +658,14 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     restartinimas = true;
                     player.Fill = new SolidColorBrush(Colors.Red);
 
+                   if(playerStruct.laimejoZaidima)
+                   {
+                       lygis = 1;
+                       playerStruct.laimejoZaidima = false;
+                   }
+
                     ProgramStarted();
                     perejoLygi = false;
-
                 }
             }
             if (playerStruct.mire && joystick.IsPressed && !playerStruct.laimejo)
@@ -1243,7 +1267,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         //stopRight = true;// stops moving right
                         player.Fill = new SolidColorBrush(Color.Black);
                         playerStruct.laimejo = true;
-
+                        if (lygis == yraLygiu)
+                            playerStruct.laimejoZaidima = true;
                         //if (lygis == 1)
                         //{   
 
@@ -1272,7 +1297,10 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         //stopLeft = true;// stops moving left
                         player.Fill = new SolidColorBrush(Color.Black);
                         playerStruct.laimejo = true;
-                       
+
+                        if (lygis == yraLygiu)
+                            playerStruct.laimejoZaidima = true;
+
                         //if(lygis == 1)
                         //{
                         //    lygis = 2;
