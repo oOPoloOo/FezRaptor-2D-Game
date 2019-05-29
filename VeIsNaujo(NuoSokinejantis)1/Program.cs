@@ -746,9 +746,13 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         if (str.power < -40)
                         {
                             if (str.lifeBarGyvybes > 0)
-                                ledStrip.SetLed(lifeBarSk - (str.lifeBarGyvybes), false);
-                            str.lifeBarGyvybes -= 1;//Kritimo is aukstai zala
-
+                            {
+                                for (int plattt = 3; plattt > 0; plattt--)
+                                {
+                                    ledStrip.SetLed(lifeBarSk - (str.lifeBarGyvybes), false);
+                                    str.lifeBarGyvybes -= 1;//Kritimo is aukstai zala
+                                }
+                            }
                             //str.minusGyvybe = true;
                         }
                         str.power = 0;
@@ -784,9 +788,14 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 if (str.power < -40)
                 {
                     if (str.lifeBarGyvybes > 0)
-                        ledStrip.SetLed(lifeBarSk - (str.lifeBarGyvybes), false);
-                    str.lifeBarGyvybes -= 1;// Kritimo is aukstai zala
-                    //   str.minusGyvybe = true;
+                    {
+                        for (int platt = 3; platt > 0; platt--)
+                        {
+                            ledStrip.SetLed(lifeBarSk - (str.lifeBarGyvybes), false);
+                            str.lifeBarGyvybes -= 1;// Kritimo is aukstai zala
+                            //   str.minusGyvybe = true;
+                        }
+                    }
                 }
                 str.power = 0;
             }
@@ -1053,9 +1062,14 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         if (Zaidejas.power < -40)
                         {
                             if (Zaidejas.lifeBarGyvybes > 0)
-                                ledStrip.SetLed(lifeBarSk - (Zaidejas.lifeBarGyvybes), false);
-                            Zaidejas.lifeBarGyvybes -= 1;// Kritimo is aukstai zala
-                            // Zaidejas.minusGyvybe = true;
+                            {
+                                for (int spygg = 3; spygg > 0; spygg--)
+                                {
+                                    ledStrip.SetLed(lifeBarSk - (Zaidejas.lifeBarGyvybes), false);
+                                    Zaidejas.lifeBarGyvybes -= 1;// Kritimo is aukstai zala
+                                    // Zaidejas.minusGyvybe = true;
+                                }
+                            }
                         }
                         Zaidejas.power = 0;
 
@@ -1066,8 +1080,13 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     if (buvoVirsui && spygl[index].posBottom() >= Zaidejas.playerTopPosition)
                     {
                         if (Zaidejas.lifeBarGyvybes > 0)
-                            ledStrip.SetLed(lifeBarSk - (Zaidejas.lifeBarGyvybes), false);
-                        Zaidejas.lifeBarGyvybes--;
+                        {
+                            for (int spygl1 = 2; spygl1 > 0; spygl1--)
+                            {
+                                ledStrip.SetLed(lifeBarSk - (Zaidejas.lifeBarGyvybes), false);
+                                Zaidejas.lifeBarGyvybes--;
+                            }
+                        }
                         // Zaidejas.minusGyvybe = true;
                         //      tunes.Play(500,200);
                         //.Play(200);
@@ -1140,8 +1159,13 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         if (Zaidejas.power < -40)
                         {
                             if (Zaidejas.lifeBarGyvybes > 0)
-                                ledStrip.SetLed(lifeBarSk - (Zaidejas.lifeBarGyvybes), false);
-                            Zaidejas.lifeBarGyvybes -= 1;// Kritimo is aukstai zala
+                            {
+                                for (int kint = 3; kint > 0; kint--)
+                                {
+                                    ledStrip.SetLed(lifeBarSk - (Zaidejas.lifeBarGyvybes), false);
+                                    Zaidejas.lifeBarGyvybes -= 1;// Kritimo is aukstai zala
+                                }
+                            }
                             // Zaidejas.minusGyvybe = true;
                         }
                         Zaidejas.power = 0;
