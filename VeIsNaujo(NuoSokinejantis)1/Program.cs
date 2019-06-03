@@ -14,27 +14,6 @@ using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
-
-//Pirmi lygiai V15
-//Ta pati problema kaip ir su meniu
-//Pereina antra lygi, tada nesulaukia imput vis dar budamas ant duru ir pereina i trecia lygi
-//Sutvarkiau problema pridedamas signalo laukimo, bet tekstas atsirefresina, tik lygio pradzioj
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 namespace VeIsNaujo_NuoSokinejantis_1
 {
     public partial class Program
@@ -608,18 +587,18 @@ namespace VeIsNaujo_NuoSokinejantis_1
             //}
             if (playerStruct.laimejo && !playerStruct.mire)
             {
-                if (!playerStruct.laimejoZaidima)
-                {
-                    label4.TextContent = "Jus perejote lygi!!!";
-                    label3.TextContent = "Paspauskite valdikli, kad kartotumete";
-                }
-                else
-                {
-                    label4.TextContent = "Jus laimejote zaidima!!!";
-                    label3.TextContent = "Paspauskite valdikli, kad pradetumete is naujo";
-                   // playerStruct.laimejoZaidima = false;
-                    //lygis = 1;
-                }
+                //if (!playerStruct.laimejoZaidima)
+                //{
+                //    label4.TextContent = "Jus perejote lygi!!!";
+                //    label3.TextContent = "Paspauskite valdikli, kad kartotumete";
+                //}
+                //else
+                //{
+                //    label4.TextContent = "Jus laimejote zaidima!!!";
+                //    label3.TextContent = "Paspauskite valdikli, kad pradetumete is naujo";
+                //   // playerStruct.laimejoZaidima = false;
+                //    //lygis = 1;
+                //}
                 int sk = 1;
                 while(sk > 0)
                 {
@@ -699,7 +678,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 ProgramStarted();
 
             }
-             if(kairysMygtukas.Pressed)
+             if(button.Pressed)
              {
 
                  playerStruct.playerTopPosition = 0;

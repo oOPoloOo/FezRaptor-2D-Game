@@ -139,8 +139,8 @@
           <moduleHasSocketUses Id="78269acb-28ce-472f-8ff5-97dfe1020a44">
             <socketUse Id="79532f67-361f-408d-adae-81e633479618" label="Y">
               <socket>
-                <socketUseReferencesSocket Id="f09ea51d-1619-4c7c-b437-6a5598eae26a">
-                  <socketMoniker Id="bd13762c-3a10-4d23-a681-e8cb9361bfce" />
+                <socketUseReferencesSocket Id="86871762-a55a-4219-9be8-883da9350108">
+                  <socketMoniker Id="5ca8a24a-21ff-4137-916f-5fc2b11dbd2b" />
                 </socketUseReferencesSocket>
               </socket>
             </socketUse>

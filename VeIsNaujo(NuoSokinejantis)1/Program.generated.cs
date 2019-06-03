@@ -24,11 +24,11 @@ namespace VeIsNaujo_NuoSokinejantis_1 {
         /// <summary>The LED Strip module using socket 1 of the mainboard.</summary>
         private Gadgeteer.Modules.GHIElectronics.LEDStrip ledStrip;
         
-        /// <summary>The LED7R module using socket 18 of the mainboard.</summary>
+        /// <summary>The LED7R module using socket 9 of the mainboard.</summary>
         private Gadgeteer.Modules.GHIElectronics.LED7R led7R;
         
         /// <summary>The Button module using socket 4 of the mainboard.</summary>
-        private Gadgeteer.Modules.GHIElectronics.Button kairysMygtukas;
+        private Gadgeteer.Modules.GHIElectronics.Button button;
         
         /// <summary>This property provides access to the Mainboard API. This is normally not necessary for an end user program.</summary>
         protected new static GHIElectronics.Gadgeteer.FEZRaptor Mainboard {
@@ -55,8 +55,8 @@ namespace VeIsNaujo_NuoSokinejantis_1 {
             this.displayT43 = new GTM.GHIElectronics.DisplayT43(15, 16, 17, 14);
             this.joystick = new GTM.GHIElectronics.Joystick(13);
             this.ledStrip = new GTM.GHIElectronics.LEDStrip(1);
-            this.led7R = new GTM.GHIElectronics.LED7R(18);
-            this.kairysMygtukas = new GTM.GHIElectronics.Button(4);
+            this.led7R = new GTM.GHIElectronics.LED7R(9);
+            this.button = new GTM.GHIElectronics.Button(4);
         }
     }
 }
