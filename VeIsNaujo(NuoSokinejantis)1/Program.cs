@@ -7,17 +7,19 @@ using Microsoft.SPOT.Presentation.Controls;
 using Microsoft.SPOT.Presentation.Media;
 using Microsoft.SPOT.Presentation.Shapes;
 using Microsoft.SPOT.Touch;
-
+using Microsoft.SPOT.Net.NetworkInformation;
 
 using Gadgeteer.Networking;
 using GT = Gadgeteer;
 using GTM = Gadgeteer.Modules;
 using Gadgeteer.Modules.GHIElectronics;
 
+
 namespace VeIsNaujo_NuoSokinejantis_1
 {
     public partial class Program
     {
+        #region Kintamieji
         Window mainWindow;
         Canvas layout;
         Text label;// Gyvybes
@@ -84,12 +86,13 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 //playerRightPosition = playerLeftPosition + playerWidth;
             }
         }
+
+        #region OtherStuff
         static int lifeBarSk = 7; // nekeist
         static int gyvybiuSk = 3;
         PlayerStruct playerStruct = new PlayerStruct(0, 0, 20, 20, 25, true, 0, false, lifeBarSk, 0, true, false, false, false, gyvybiuSk, false);
-
-
-
+        #endregion
+        #region spyglysStruct
         //public struct SpyglysStruct
         //{
         //    public int spygliaiId;
@@ -104,46 +107,38 @@ namespace VeIsNaujo_NuoSokinejantis_1
         //    }
         //}
         //SpyglysStruct spygl = new SpyglysStruct(0, 10, 10);
-
-        //Spygliai
+        #endregion
+        #region Spygliai
         //int spygliaiId = 0;
         //int spyglHeigth = 10;
         //int spyglWidth = 10;
         //bool spyglKrist = false;
         //Platform[] spygliaiMap = new Platform[4];
-
-        //Platform parameters
+        #endregion
+        #region Platform parameters
         ////If platform parameters changes, position of platform also changes
         int platHeight = 25;// Tu
         int platWidth = 25;// buvo 30
-
-        //Collision parameters
+        #endregion
+        #region Collision parameters
         bool stopLeft = false;// makes stop move left
         bool stopRight = false;// makes stop move right
-
-
+        #endregion
         GT.Timer joystickTimer = new GT.Timer(30);
         GT.Timer jumpTimer = new GT.Timer(30);
-
-
-
-
-        //Map generation
+        #region Map generation
         // -88 this offset makes the platform align with botom of the screen
         // int platPraziosTop = platHeight * (-12);
         int basePositionTop = 0; //buvo -88, nustatau veliau
         int basePositionLeft = 0;
         int platformId = 0;
-
-
+        #endregion
         Platform[] platformMap = new Platform[200];
-
-
-        //Buvusi zaidejo pozicija, kolizijai geriau aptikti
+        #region Buvusi zaidejo pozicija, kolizijai geriau aptikti
         int buvusKaires;
         int buvusVirsaus;
-
-        //Spygliai
+        #endregion
+        #region Spygliai
         //bool spyglKrist = false;
         //bool pirmasKartas = true;
         //bool spyglNukrito = false;
@@ -155,47 +150,61 @@ namespace VeIsNaujo_NuoSokinejantis_1
         bool[] pirmasKartas = new bool[spygliuMaxSk];
         bool[] spyglNukrito = new bool[spygliuMaxSk];
         Platform[] spygliaiMap = new Platform[spygliuMaxSk];
-
-        //Lava
+        #endregion
+        #region Lava
         static int lavosMaxSk = 35;
         int lavaId = 0;
         int lavaHeigth = 25;
         int lavaWidth = 25;
         Platform[] lavaMap = new Platform[lavosMaxSk];
-
-        //Lyugio Restartinimas
+        #endregion
+        #region Lygio Restartinimas
         bool restartinimas = false;
-
-        //Durys i pergale
+        #endregion
+        #region Durys i pergale
         static int duruMaxSk = 10;
         int duruId = 0;
         int duruHeigth = 35;
         int duruWidth = 25;
         Platform[] durysMap = new Platform[duruMaxSk];
-
-        //Snaige
+        #endregion
+        #region Snaige
         int snowflakeLeftPosition = 150;
         int snowflakeTopPosition = 50;
         Random randomNumberGenerator = new Random();
         GT.Timer snowFlakeTimer = new GT.Timer(75);
-
-        //Taskai
+        #endregion
+        #region Taskai
         int galutiniaiTaskai = 0;
         int snaigiuTaskai = 0;
         static int duotaLaiko = 1200;
         int laikoTaskai = duotaLaiko;
-        
-        //Lygiai
+        #endregion
+        #region Lygiai
         int lygis = 1;
         bool perejoLygi = false;
         int buvesLygis = 1;
         int yraLygiu = 3;
         bool nextLevel = false;
+        #endregion
+        #region Confidential
+        const string SSID = "HUA";
+        const string PASSWORD = "12345678";
 
+        //servername = "remotemysql.com";
+        //username = "L6P59qwcqT";
+        //password = "7Ngh9iUx0x";
+        //dbname = "L6P59qwcqT";
+        #endregion
+        GT.Timer Kick;
+        #endregion
 
-
+        #region Setupinimas
         void ProgramStarted()
         {
+
+
+
             SetupUI();
 
             Canvas.SetLeft(player, playerStruct.playerLeftPosition);
@@ -205,16 +214,36 @@ namespace VeIsNaujo_NuoSokinejantis_1
             //joystickTimer.Start();
             if (!restartinimas)
             {
+                #region wifi
+                if (!wifiRS21.NetworkInterface.Opened)
+                    wifiRS21.NetworkInterface.Open();
+
+                if (!wifiRS21.NetworkInterface.IsDhcpEnabled)
+                    wifiRS21.NetworkInterface.EnableDhcp();
+
+                NetworkChange.NetworkAddressChanged += NetworkChange_NetworkAddressChanged;
+                NetworkChange.NetworkAvailabilityChanged += NetworkChange_NetworkAvailabilityChanged;
+
+                Kick = new GT.Timer(100, GT.Timer.BehaviorType.RunOnce);
+                Kick.Tick += Kick_Tick;
+                Kick.Start();
+                #endregion
                 jumpTimer.Tick += new GT.Timer.TickEventHandler(jumpTimer_Tick);
                 jumpTimer.Start();
 
                 snowFlakeTimer.Tick += new GT.Timer.TickEventHandler(SnowflakeTimer_Tick);
                 snowFlakeTimer.Start();
+
+                gyro.MeasurementComplete += gyro_MeasurementComplete;
+                gyro.Calibrate();
+                gyro.StartTakingMeasurements();
             }
 
 
 
         }
+
+     
 
         void SetupUI()
         {
@@ -320,7 +349,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             if (lygis == 1)
             {
                 // Pirmas Lygis           
-               
+
                 map[0] = ".....................................";
                 map[1] = ".....................................";
                 map[2] = ".....................................";
@@ -337,7 +366,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             else if (lygis == 2)
             {
                 // Pirmas Lygis           
-               // string[] map = new string[12];
+                // string[] map = new string[12];
                 map[0] = ".....................................";
                 map[1] = ".....................................";
                 map[2] = ".....................................";
@@ -369,62 +398,60 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 map[11] = "#LLLLLLLLLLLLLL...D.................";
             }
 
-                
-                for (int i = 0; i < map.Length; i++)
-                {
-                    for (int j = 0; j < map[i].Length; j++)
-                    {
-                        if (map[i][j] == '#')
-                        {
-                            platformMap[platformId] = new Platform(platWidth, platHeight);
-                            platformMap[platformId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
-                            platformId++;
-                        }
 
-                        if (map[i][j] == 'S')
-                        {
-                            spygliaiMap[spygliaiId] = new Platform(spyglWidth, spyglHeigth);
-                            spygliaiMap[spygliaiId].paint(Colors.Blue);
-                            // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
-                            spygliaiMap[spygliaiId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
-                            spygliaiId++;
-                        }
-                        if (map[i][j] == 'L')
-                        {
-                            lavaMap[lavaId] = new Platform(lavaWidth, lavaHeigth);
-                            lavaMap[lavaId].paint(Colors.Magenta);
-                            // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
-                            lavaMap[lavaId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
-                            lavaId++;
-                        }
-                        if (map[i][j] == 'D')
-                        {
-                            durysMap[duruId] = new Platform(duruWidth, duruHeigth);
-                            durysMap[duruId].paint(Colors.Green);
-                            // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
-                            durysMap[duruId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
-                            duruId++;
-                        }
+            for (int i = 0; i < map.Length; i++)
+            {
+                for (int j = 0; j < map[i].Length; j++)
+                {
+                    if (map[i][j] == '#')
+                    {
+                        platformMap[platformId] = new Platform(platWidth, platHeight);
+                        platformMap[platformId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
+                        platformId++;
+                    }
+
+                    if (map[i][j] == 'S')
+                    {
+                        spygliaiMap[spygliaiId] = new Platform(spyglWidth, spyglHeigth);
+                        spygliaiMap[spygliaiId].paint(Colors.Blue);
+                        // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
+                        spygliaiMap[spygliaiId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
+                        spygliaiId++;
+                    }
+                    if (map[i][j] == 'L')
+                    {
+                        lavaMap[lavaId] = new Platform(lavaWidth, lavaHeigth);
+                        lavaMap[lavaId].paint(Colors.Magenta);
+                        // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
+                        lavaMap[lavaId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
+                        lavaId++;
+                    }
+                    if (map[i][j] == 'D')
+                    {
+                        durysMap[duruId] = new Platform(duruWidth, duruHeigth);
+                        durysMap[duruId].paint(Colors.Green);
+                        // * platWith ir platHeigth, kad spyglius deliojant mape galima butu orentuotis pagal platformu poz
+                        durysMap[duruId].set(basePositionLeft + j * platWidth, basePositionTop + i * platHeight);
+                        duruId++;
                     }
                 }
-            
-
+            }
 
             // Adding platforms to screen
             //if (!restartinimas)
             //{
-                for (int i = 0; i < platformId; i++)
-                {
-                    layout.Children.Add(platformMap[i].get());
-                }
-                for (int i = 0; i < lavaId; i++)
-                {
-                    layout.Children.Add(lavaMap[i].get());
-                }
-                for (int i = 0; i < duruId; i++)
-                {
-                    layout.Children.Add(durysMap[i].get());
-                }
+            for (int i = 0; i < platformId; i++)
+            {
+                layout.Children.Add(platformMap[i].get());
+            }
+            for (int i = 0; i < lavaId; i++)
+            {
+                layout.Children.Add(lavaMap[i].get());
+            }
+            for (int i = 0; i < duruId; i++)
+            {
+                layout.Children.Add(durysMap[i].get());
+            }
             //}
             //Spygliai keicia pozicija, todel reikia kurt per naujo
             for (int i = 0; i < spygliaiId; i++)
@@ -471,7 +498,34 @@ namespace VeIsNaujo_NuoSokinejantis_1
 
             mainWindow.Child = layout;
         }
+        #endregion
 
+        #region wifi2
+        void Kick_Tick(GT.Timer timer)
+        {
+            Debug.Print("Attempt to Join");
+            try
+            {
+                wifiRS21.NetworkInterface.Join(SSID, PASSWORD);
+
+            }
+            catch (Exception ex)
+            {
+                Debug.Print("Exception: " + ex.Message);
+            }
+
+        }
+        private void NetworkChange_NetworkAvailabilityChanged(object sender, NetworkAvailabilityEventArgs e)
+        {
+            Debug.Print("Network Availability: " + e.IsAvailable.ToString());
+        }
+        private void NetworkChange_NetworkAddressChanged(object sender, EventArgs e)
+        {
+            Debug.Print("Address: " + wifiRS21.NetworkInterface.IPAddress);
+        }
+        #endregion
+
+        #region Snaige
         void SnowflakeTimer_Tick(GT.Timer timer)
         {
             snowflakeTopPosition += 5;
@@ -491,7 +545,43 @@ namespace VeIsNaujo_NuoSokinejantis_1
             snowflakeTopPosition = 50;
             snowflakeLeftPosition = randomNumberGenerator.Next(300) + 10;
         }
+        #endregion
 
+        #region Gyro
+        void gyro_MeasurementComplete(Gyro sender, Gyro.MeasurementCompleteEventArgs e)
+        {
+            double X = e.X;
+            double Y = e.Y;
+            double Z = e.Z;
+
+            if (!playerStruct.jumped)
+            {
+
+                if (Y > 25)
+                {
+                    playerStruct.jumped = true;
+                    //antPavirsiaus = false;
+                    playerStruct.power = playerStruct.jumpPower;
+                }
+            }
+            Canvas.SetTop(player, playerStruct.playerTopPosition);
+            if (X < -10 && X != 0 && playerStruct.playerLeftPosition > 0)
+            {
+                //playerStruct.playerLeftPosition -= 20;
+                playerStruct.playerLeftPosition -= 5;
+            }
+
+            if (X > 5 && X != 0 && (playerStruct.playerLeftPosition + playerStruct.playerWidth) != 800)
+            {
+                //playerStruct.playerLeftPosition += 20;
+                playerStruct.playerLeftPosition += 5;
+            }
+            Canvas.SetLeft(player, playerStruct.playerLeftPosition);
+            CheckForLanding();
+        }
+        #endregion
+
+        #region Timer
         void jumpTimer_Tick(GT.Timer timer)
         {
 
@@ -567,7 +657,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 scoreLabel.TextContent = "Taskai: " + galutiniaiTaskai;
             }
             // if (playerStruct.lifeBarGyvybes < 1) playerStruct.mire = true; 
-            if (playerStruct.gyvybes < 1 && playerStruct.lifeBarGyvybes < 1) playerStruct.mire = true;// Taip dar neveikia - neveikia restart ir nujima visas gyvybes iskart.
+            if (playerStruct.gyvybes < 1 && playerStruct.lifeBarGyvybes < 1) playerStruct.mire = true;
+            // Taip dar neveikia - neveikia restart ir nujima visas gyvybes iskart.
             if (playerStruct.mire && !playerStruct.laimejo)
             {
                 label2.TextContent = "Zaidimas Baigtas!";
@@ -587,6 +678,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
             //}
             if (playerStruct.laimejo && !playerStruct.mire)
             {
+
                 //if (!playerStruct.laimejoZaidima)
                 //{
                 //    label4.TextContent = "Jus perejote lygi!!!";
@@ -599,11 +691,13 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 //   // playerStruct.laimejoZaidima = false;
                 //    //lygis = 1;
                 //}
+                //postScore();
+
                 int sk = 1;
-                while(sk > 0)
+                while (sk > 0)
                 {
-                    if(joystick.IsPressed)
-                    { 
+                    if (joystick.IsPressed)
+                    {
                         nextLevel = true;
                         break;
                     }
@@ -611,7 +705,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 //if (joystick.IsPressed)  
                 if (nextLevel)
                 {
-                   // playerStruct.playerTopPosition = 240;
+                    // playerStruct.playerTopPosition = 240;
                     playerStruct.playerTopPosition = 0;
                     playerStruct.playerLeftPosition = 0;
 
@@ -620,7 +714,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         playerStruct.lifeBarGyvybes = lifeBarSk;
                         playerStruct.gyvybes = gyvybiuSk;
                     }
-                   
+
                     laikoTaskai = duotaLaiko;
                     snaigiuTaskai = 0;
                     playerStruct.laimejo = false;
@@ -637,11 +731,12 @@ namespace VeIsNaujo_NuoSokinejantis_1
                     restartinimas = true;
                     player.Fill = new SolidColorBrush(Colors.Red);
 
-                   if(playerStruct.laimejoZaidima)
-                   {
-                       lygis = 1;
-                       playerStruct.laimejoZaidima = false;
-                   }
+                    if (playerStruct.laimejoZaidima)
+                    {
+                        postScore();
+                        lygis = 1;
+                        playerStruct.laimejoZaidima = false;
+                    }
 
                     ProgramStarted();
                     perejoLygi = false;
@@ -649,8 +744,8 @@ namespace VeIsNaujo_NuoSokinejantis_1
             }
             if (playerStruct.mire && joystick.IsPressed && !playerStruct.laimejo)
             {
+                postScore();
 
-              
                 playerStruct.playerTopPosition = 0;
                 playerStruct.playerLeftPosition = 0;
                 playerStruct.lifeBarGyvybes = lifeBarSk;
@@ -678,37 +773,68 @@ namespace VeIsNaujo_NuoSokinejantis_1
                 ProgramStarted();
 
             }
-             if(button.Pressed)
-             {
+            if (button.Pressed)
+            {
 
-                 playerStruct.playerTopPosition = 0;
-                 playerStruct.playerLeftPosition = 0;
-                 playerStruct.lifeBarGyvybes = lifeBarSk;
-                 playerStruct.gyvybes = gyvybiuSk;
-                 snaigiuTaskai = 0;
-                 laikoTaskai = duotaLaiko;
-                 playerStruct.mire = false;
-
-
-                 for (int i = 0; i < duruId; i++) layout.Children.Remove(durysMap[i].get());
-                 for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
-                 for (int i = 0; i < lavaId; i++) layout.Children.Remove(lavaMap[i].get());
-                 for (int i = 0; i < spygliaiId; i++) layout.Children.Remove(spygliaiMap[i].get());
+                playerStruct.playerTopPosition = 0;
+                playerStruct.playerLeftPosition = 0;
+                playerStruct.lifeBarGyvybes = lifeBarSk;
+                playerStruct.gyvybes = gyvybiuSk;
+                snaigiuTaskai = 0;
+                laikoTaskai = duotaLaiko;
+                playerStruct.mire = false;
 
 
-                 lavaId = 0;
-                 platformId = 0;
-                 spygliaiId = 0;
-                 duruId = 0;
-                 restartinimas = true;
+                for (int i = 0; i < duruId; i++) layout.Children.Remove(durysMap[i].get());
+                for (int i = 0; i < platformId; i++) layout.Children.Remove(platformMap[i].get());
+                for (int i = 0; i < lavaId; i++) layout.Children.Remove(lavaMap[i].get());
+                for (int i = 0; i < spygliaiId; i++) layout.Children.Remove(spygliaiMap[i].get());
 
 
-                 ProgramStarted();
-             }
+                lavaId = 0;
+                platformId = 0;
+                spygliaiId = 0;
+                duruId = 0;
+                restartinimas = true;
 
-        }//jumpTimer end
 
+                ProgramStarted();
+            }
 
+        }
+        #endregion
+
+        #region Post_Score
+        private void postScore()
+        {
+            try
+            {
+                Debug.Print("**** Starting web request ****");
+
+                string URL = "http://ktuprojektas.000webhostapp.com/add.php?rezultatas=" + galutiniaiTaskai + "&uid=" + 13;
+                Debug.Print("Kreipiamasi i: " + URL);
+
+                //if (succsess == true)
+                //    break;
+
+                HttpRequest request = HttpHelper.CreateHttpGetRequest(URL);
+                request.ResponseReceived += postData;
+                request.SendRequest();
+            }
+            catch
+            {
+                Debug.Print("Iðimtis: Exception during web request");
+            }
+        }
+
+        private void postData(HttpRequest sender, HttpResponse response)
+        {
+            Debug.Print(response.Text);
+        }
+        //jumpTimer end
+        #endregion
+
+        #region Metodai
         //-------------------------------------------------------------------------------------------------
         static void VirsausKolizija(int mapId, Platform[] map, int buvusVirsaus, ref PlayerStruct str, Gadgeteer.Modules.GHIElectronics.DisplayT43 displayT43, ref LEDStrip ledStrip)
         {///DARAU PAKEITIMUS - reikia kad player butu ne struct, o platform klasej, kitaip nesigaus padaryt koliziju kitiem obj
@@ -1068,12 +1194,12 @@ namespace VeIsNaujo_NuoSokinejantis_1
                         {
                             if (Zaidejas.lifeBarGyvybes > 0)
                             {
-                                for (int spygg = 3; spygg > 0; spygg--)
-                                {
+                                //for (int spygg = 3; spygg > 0; spygg--)
+                                //{
                                     ledStrip.SetLed(lifeBarSk - (Zaidejas.lifeBarGyvybes), false);
                                     Zaidejas.lifeBarGyvybes -= 1;// Kritimo is aukstai zala
                                     // Zaidejas.minusGyvybe = true;
-                                }
+                                //}
                             }
                         }
                         Zaidejas.power = 0;
@@ -1260,7 +1386,7 @@ namespace VeIsNaujo_NuoSokinejantis_1
                             lygis++;
                             perejoLygi = true;
                         }
-                        
+
 
                         break;
                     }
@@ -1324,5 +1450,6 @@ namespace VeIsNaujo_NuoSokinejantis_1
             }
 
         } //void CheckForLanding end
+        #endregion
     }
 }
