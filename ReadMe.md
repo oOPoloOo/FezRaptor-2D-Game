@@ -1,9 +1,9 @@
 
-Directories:
+Directories: <br/>
 VeIsNaujo(NuoSokinejantis)1-> game code <br/>
 FezRaptorGameVideos---------> videos and photo showing how finished game works
 
-Info:
+Info: <br/>
 This is 2D platformer game.<br/>
 All physics and collisions created from 0.<br/>
 This game created for Fez Raptor hardware.<br/>
