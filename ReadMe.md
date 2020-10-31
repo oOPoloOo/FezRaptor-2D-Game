@@ -3,7 +3,8 @@ VeIsNaujo(NuoSokinejantis)1 - game code
 FezRaptorGameVideos         - videos and photo showing how finished game works
 
 Info:
-This is 2D platformer game. All physics and collisions created from 0.
+This is 2D platformer game.
+All physics and collisions created from 0.
 This game created for Fez Raptor hardware.
 I do not know if this is a final game version. 
 
