@@ -184,8 +184,8 @@
           <moduleHasSocketUses Id="9ec1c682-4b61-497c-a741-25ce545debac">
             <socketUse Id="96c25618-899e-4e46-8fd6-07c53d5806fc" label="I">
               <socket>
-                <socketUseReferencesSocket Id="4d209b91-e0d7-4877-a9b2-c8b737aa0bb2">
-                  <socketMoniker Id="785c7a94-dc35-4765-848d-c953987f9503" />
+                <socketUseReferencesSocket Id="91d09bd8-1d06-4bfc-9123-ff1ee24feb66">
+                  <socketMoniker Id="cc72e80f-1496-4664-a262-8a3801259fbe" />
                 </socketUseReferencesSocket>
               </socket>
             </socketUse>
