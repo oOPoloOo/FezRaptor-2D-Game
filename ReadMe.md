@@ -26,7 +26,7 @@ Does not do damage to spikes.
 player can walk on lava like on solid ground.
 
 
-![alt text](http://url/to/img.png)
+![First try](https://github.com/oOPoloOo/FezRaptor-2D-Game/blob/poGyvybes2_GalutiniamAtsiskaitymui/FezRaptorGameVideos/First.mp4)
 
 
 
