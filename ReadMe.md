@@ -1,5 +1,5 @@
 Info:
-This is 2D platformer game. All physic and collisions created from 0.
+This is 2D platformer game. All physics and collisions created from 0.
 This game created for Fez Raptor hardware.
 I do not know if this is a final game version. 
 
@@ -18,7 +18,8 @@ Spikes:
 Then touched starts fall.
 Fall stops then collides with: lava, ground, terrain (static cubes objects).
 Does damage to player then falls on his head.
-Dees not do damage to player if he on top of the spike. In this manner they can be used as a platform.
+Dees not do damage to player if he on top of the spike.
+In this manner they can be used as a platform.
 
 Lava:
 Do constant damage to player if he stands in lava.
@@ -26,7 +27,7 @@ Does not do damage to spikes.
 player can walk on lava like on solid ground.
 
 
-![First try](https://github.com/oOPoloOo/FezRaptor-2D-Game/blob/poGyvybes2_GalutiniamAtsiskaitymui/FezRaptorGameVideos/First.mp4)
+![Device](https://github.com/oOPoloOo/FezRaptor-2D-Game/blob/poGyvybes2_GalutiniamAtsiskaitymui/FezRaptorGameVideos/Device.jpg)
 
 
 
