@@ -1,6 +1,6 @@
 
 Directories: <br/>
-VeIsNaujo(NuoSokinejantis)1-> game code <br/>
+VeIsNaujo(NuoSokinejantis)1--> game code <br/>
 FezRaptorGameVideos---------> videos and photo showing how finished game works
 
 Info: <br/>
