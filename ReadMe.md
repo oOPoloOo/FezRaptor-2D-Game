@@ -30,7 +30,7 @@ In this way they can be used as a platform.<br/>
 Lava(Pink):<br/>
 Do constant damage to player if he stands in lava.<br/>
 Does not do damage to spikes.<br/>
-player can walk on lava like on solid ground.<br/>
+Player can walk on lava like on solid ground.<br/>
 <br/>
 Terrain(Yellow):<br/>
 Does not do damage to player.<br/>
