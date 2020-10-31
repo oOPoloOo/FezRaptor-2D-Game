@@ -36,7 +36,7 @@ Terrain(Yellow):<br/>
 Does not do damage to player.<br/>
 Player can stand, walk on it.<br/>
 <br/>
-This how game looks like<br/>
+This is how game looks like<br/>
 ![Device](https://github.com/oOPoloOo/FezRaptor-2D-Game/blob/poGyvybes2_GalutiniamAtsiskaitymui/FezRaptorGameVideos/Device.jpg) 
 
 
